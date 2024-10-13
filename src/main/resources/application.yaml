@@ -1,0 +1,40 @@
+
+
+spring:
+#  cache:
+#    type: redis
+#    cache-names: redis-cache
+
+#  data:
+#    redis:
+#      host: ${REDIS_HOST}
+#      port: ${REDIS_PORT}
+#      password: ${REDIS_PASSWORD}
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME}?currentSchema=${DM_SCHEMA}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:liquibase/db.changelog-master.yaml
+    enabled: true
+    default-schema: cloud_files_storage
+
+
+server:
+  port: ${PORT}
+
+#springdoc:
+#  override-with-generic-response: false
+#
+#minio:
+#  bucket: ${MINIO_BUCKET}
+#  url: ${MINIO_URL}
+#  accessKey: ${MINIO_ACCESS_KEY}
+#  secretKey: ${MINIO_SECRET_KEY}
+
