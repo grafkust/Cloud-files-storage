@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization</title>
+    <link rel="stylesheet" href="/auth-style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Authorization form</h2>
+    <form class="auth-form" action="/perform_login" method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" th:value = "${username}" required>
+            <div class="error-message" th:if = "${illegalArgument.contains('username')}" th:text = "${illegalArgument}"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <div class="error-message" th:if = "${illegalArgument.contains('password')}" th:text = "${illegalArgument}"></div>
+        </div>
+        <button type="submit" class="btn">Authorization</button>
+    </form>
+    <p>Don't have an account? <a href="/auth/registration">Registration</a></p>
+</div>
+</body>
+</html>

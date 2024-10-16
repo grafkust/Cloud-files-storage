@@ -1,0 +1,57 @@
+package com.project.cloud.files.storage.controller;
+
+import com.project.cloud.files.storage.mapper.UserMapper;
+import com.project.cloud.files.storage.model.dto.UserDto;
+import com.project.cloud.files.storage.model.entity.user.User;
+import com.project.cloud.files.storage.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RequestMapping("/auth")
+@Controller
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final UserMapper userMapper;
+    private final UserService userService;
+
+
+    @GetMapping("/login")
+    private String login(Model model) {
+        model.addAttribute("illegalArgument", "no exception");
+        model.addAttribute("username");
+        return "auth/login";
+    }
+
+    @GetMapping("/registration")
+    private String registration(Model model) {
+        model.addAttribute("userDto", new UserDto());
+        model.addAttribute("fieldNotUnique", "no exception");
+        return "auth/registration";
+    }
+
+    @PostMapping("/registration")
+    public String regUser(@Validated @ModelAttribute("userDto") UserDto userDto,
+                          BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("fieldNotUnique", "no exception");
+            return "auth/registration";
+        }
+
+        User user = userMapper.toEntity(userDto);
+        userService.create(user);
+        return "redirect:/auth/login";
+    }
+
+    @GetMapping("/logout")
+    private String logout() {
+        return "redirect:/auth/login";
+    }
+
+
+}

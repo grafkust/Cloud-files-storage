@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+  <link rel="stylesheet"  href="/auth-style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Registration form</h2>
+    <form class="auth-form" action = "/auth/registration" method="post" th:object="${userDto}">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required th:field="*{username}">
+            <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            <div class="error-message" th:if = "${fieldNotUnique.contains('username')}"  th:text = "${fieldNotUnique}"></div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email"  name="email" placeholder="Enter your email" required th:field="*{email}">
+            <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            <div class="error-message" th:if = "${fieldNotUnique.contains('email')}" th:text = "${fieldNotUnique}"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password"  name="password" placeholder="Enter your password" required th:field="*{password}">
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+        <button type="submit" class="btn">Registration</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Authorization</a></p>
+</div>
+</body>
+</html>
