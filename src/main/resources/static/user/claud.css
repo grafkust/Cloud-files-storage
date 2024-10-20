@@ -1,0 +1,304 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 16px; /* Увеличенный базовый размер шрифта */
+}
+
+/* Header styles */
+header {
+    background-color: #2a2a2a;
+    padding: 1.5rem 2.5rem; /* Увеличенные отступы */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.search-container {
+    width: 400px; /* Увеличенная ширина поля поиска */
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1.25rem; /* Увеличенные отступы */
+    border-radius: 6px;
+    border: 1px solid #3a3a3a;
+    background-color: #333;
+    color: white;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Увеличенный отступ */
+}
+
+.username {
+    color: #fff;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.logout-btn {
+    padding: 0.75rem 1.25rem; /* Увеличенные отступы */
+    background-color: #444;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.logout-btn:hover {
+    background-color: #555;
+}
+
+/* Main content styles */
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 300px; /* Увеличенная ширина */
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #3a3a3a;
+}
+
+.sidebar-top {
+    flex: 1;
+}
+
+.sidebar-btn {
+    width: 100%;
+    padding: 1rem; /* Увеличенные отступы */
+    margin-bottom: 0.75rem;
+    background-color: #444;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.sidebar-btn:hover {
+    background-color: #555;
+}
+
+.btn-icon {
+    width: 32px; /* Увеличенный размер */
+    height: 32px;
+}
+
+/* Path navigation styles */
+.path-navigation {
+    padding: 1.5rem;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #3a3a3a;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem; /* Увеличенный размер шрифта */
+}
+
+.back-button {
+    background-color: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.back-button:hover {
+    background-color: #2a2a2a;
+}
+
+.back-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.path-separator {
+    color: #888;
+    margin: 0 0.75rem;
+}
+
+.path-item {
+    color: #888;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.path-item:hover {
+    color: #fff;
+}
+
+.current-path {
+    color: #fff;
+    cursor: default;
+}
+
+/* Content styles */
+.content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    /* Стили для скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1a;
+}
+
+
+
+/* Стили для скроллбара (WebKit browsers) */
+.content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
+}
+
+.folder-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem; /* Увеличенные отступы */
+    background-color: #2a2a2a;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    transition: background-color 0.2s;
+}
+
+.folder-item:hover {
+    background-color: #3a3a3a;
+}
+
+.folder-icon {
+    width: 48px; /* Увеличенный размер */
+    height: 48px;
+    margin-right: 1.5rem;
+}
+
+.folder-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 3rem; /* Увеличенный отступ */
+}
+
+.folder-name {
+    flex: 1;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.folder-date {
+    color: #888;
+    margin-right: 3rem; /* Увеличенный отступ */
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.folder-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    padding: 0.75rem;
+    background-color: #444;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #555;
+}
+
+.action-btn.delete:hover {
+    background-color: #d32f2f;
+}
+
+.action-btn img {
+    width: 20px; /* Увеличенный размер */
+    height: 20px;
+}
+
+/* Footer styles */
+footer {
+    background-color: #2a2a2a;
+    padding: 1.5rem 2.5rem; /* Увеличенные отступы */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #3a3a3a;
+    font-size: 1.1rem; /* Увеличенный размер шрифта */
+}
+
+.github-link {
+    color: #4a9eff;
+    text-decoration: none;
+}
+
+.github-link:hover {
+    text-decoration: underline;
+}
+
+.author {
+    color: #888;
+}
+
+/* Style for file input */
+.file-input {
+    display: none;
+}
+
+
+input[type="file"] {
+    display: none;
+}
+
+/* Стилизованная кнопка для загрузки файлов */
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Зеленый фон */
+    color: white; /* Белый текст */
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+}
+
+.custom-file-upload:hover {
+    background-color: #45a049; /* Темно-зеленый при наведении */
+}

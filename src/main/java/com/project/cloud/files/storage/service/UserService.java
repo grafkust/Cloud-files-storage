@@ -10,18 +10,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-
+    @Transactional
     public void create(User user) {
 
         checkFieldsOnUnique(user);
@@ -32,11 +34,16 @@ public class UserService {
         userRepository.save(user);
     }
 
-
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
+    public Long getIdByUsername(String username) {
+        User user = getUserByUsername(username);
+        return user.getId();
+    }
+
+
 
     private void checkFieldsOnUnique(User user) {
 

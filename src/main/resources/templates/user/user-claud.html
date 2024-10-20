@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>grafClaude</title>
+    <link rel="stylesheet" href="/user/claud.css">
+</head>
+<body>
+<header>
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Поиск файлов и папок...">
+    </div>
+    <div class="user-controls">
+        <span class="username" th:text="${username}"></span>
+        <form action="/auth/logout" method="get">
+            <button class="logout-btn">Logout</button>
+        </form>
+    </div>
+</header>
+
+<main>
+    <aside class="sidebar">
+        <div class="sidebar-top">
+
+            <form action="/upload-file" method="post" enctype="multipart/form-data">
+                <label class="sidebar-btn">
+                    <img src="/icon/upload-file.png" alt="Upload" class="btn-icon">
+                    <input type="file" name="file"
+                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java"
+                           onchange="this.form.submit()">
+                    <input type="hidden" name="path" th:value="${path}">
+                    Загрузить файл
+                </label>
+            </form>
+
+            <form action="/upload-folder" method="post" enctype="multipart/form-data">
+                <label class="sidebar-btn">
+                    <img src="/icon/upload-folder.png" alt="Upload" class="btn-icon">
+                    <input type="file" name="files" webkitdirectory="" directory=""
+                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java"
+                           onchange="this.form.submit()">
+                    <input type="hidden" name="path" th:value="${path}">
+                    Загрузить папку
+                </label>
+            </form>
+
+            <form action="/create-folder" method="post">
+                <button class="sidebar-btn" type="button"
+                        onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">
+                    <img src="/icon/folder.png" alt="New Folder" class="btn-icon">
+                    <input type="hidden" name="path" th:value="${path}">
+                    Создать папку
+                </button>
+                <div style="display:none;">
+                    <input type="text" class="search-input" name="name" placeholder="Введите имя папки"
+                           onkeydown="if(key === 'Enter') this.form.submit();">
+                </div>
+            </form>
+
+        </div>
+        <button class="sidebar-btn">
+            <img src="/icon/trash.png" alt="Trash" class="btn-icon">
+            Корзина
+        </button>
+    </aside>
+
+    <section class="content">
+
+        <div class="path-navigation">
+
+            <form action="/back" method="get">
+                <button class="back-button" th:style="${path.contains('/')} ? ''  : 'display: none;'">
+                    <input type="hidden" name="path" th:value="${path}">
+                    <img src="/icon/back.png" alt="Back">
+                </button>
+            </form>
+            <h2 class="path-item current-path"
+                th:text="${path.contains('/')} ? ${path.substring(path.indexOf('/') + 1)} : Файлы"></h2>
+        </div>
+
+        <div th:each="file : ${data}">
+            <div class="folder-item"
+                 th:data-path="${path}"
+                 th:data-file="${file}"
+                 ondblclick="redirectToFolder(this)">
+
+                <img th:src="${ (file.endsWith('.pdf') ? '/icon/pdf.png' :
+        (file.endsWith('.jpg') || file.endsWith('.jpeg') ? '/icon/jpg.png' :
+        (file.endsWith('.png') ? '/icon/image-icon.png' :
+        (file.endsWith('.doc') || file.endsWith('.docx') ? '/icon/word.png' :
+        (file.endsWith('.mp3') ? '/icon/mp3.png' :
+        (file.endsWith('.mp4') ? '/icon/mp4.png' :
+        (!file.contains('.') ? '/icon/folder.png' :
+        '/icon/file.png')))))))
+    }" alt="Folder" class="folder-icon">
+
+                <div class="folder-info">
+                    <span class="folder-name" th:text="${file}"></span>
+                    <span class="folder-date" th:text="${'12.12.1212'}"></span>
+                    <div class="folder-actions">
+
+                        <form action="/download-file" method="get">
+                            <input type="hidden" name="path" th:value="${path}">
+                            <input type="hidden" name="name" th:value="${file}">
+                            <button class="action-btn">
+                                <img src="/icon/download.png" alt="Download">
+                            </button>
+                        </form>
+
+                        <form th:action="${file.contains('.')} ? '/delete-file' : '/delete-folder'" method="post">
+                            <input type="hidden" name="path" th:value="${path}">
+                            <input type="hidden" name="name" th:value="${file}">
+                            <button class="action-btn">
+                                <img src="/icon/delete.png" alt="Delete">
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<footer>
+    <a href="https://github.com/grafkust/cloud-storage" class="github-link">GitHub Repository</a>
+    <span class="author">Автор проекта grafkust</span>
+</footer>
+
+<script>
+    function redirectToFolder(element) {
+        var path = element.getAttribute('data-path');
+        var file = element.getAttribute('data-file');
+        location.href = '/?path=' + path + '/' + file;
+    }
+</script>
+
+</body>
+</html>

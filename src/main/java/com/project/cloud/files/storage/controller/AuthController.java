@@ -3,6 +3,7 @@ package com.project.cloud.files.storage.controller;
 import com.project.cloud.files.storage.mapper.UserMapper;
 import com.project.cloud.files.storage.model.dto.UserDto;
 import com.project.cloud.files.storage.model.entity.user.User;
+import com.project.cloud.files.storage.service.MyUserDetailsService;
 import com.project.cloud.files.storage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,12 @@ public class AuthController {
         return "auth/login";
     }
 
+    @PostMapping("/login")
+    public String loginError() {
+        return "auth/login";
+    }
+
+
     @GetMapping("/registration")
     private String registration(Model model) {
         model.addAttribute("userDto", new UserDto());
@@ -45,11 +52,6 @@ public class AuthController {
 
         User user = userMapper.toEntity(userDto);
         userService.create(user);
-        return "redirect:/auth/login";
-    }
-
-    @GetMapping("/logout")
-    private String logout() {
         return "redirect:/auth/login";
     }
 
