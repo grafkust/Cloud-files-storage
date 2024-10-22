@@ -1,5 +1,32 @@
 
+server:
+  servlet:
+    session:
+      timeout: 24h
+  port: 8087
+
 spring:
+
+  mail:
+    host: ${SPRING_MAIL_HOST}
+    port: ${SPRING_MAIL_PORT}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        debug: false
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 
   cache:
     type: redis
@@ -25,12 +52,10 @@ spring:
     enabled: true
     default-schema: ${DB_SCHEMA}
 
-server:
-  port: 8087
-
 minio:
   bucket: ${MINIO_BUCKET}
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
+
 
