@@ -9,8 +9,10 @@
 <header>
     <div class="search-container">
         <form action="/search-content" method="get">
-            <input type="text" name="query" class="search-input" placeholder="Поиск файлов и папок..."
-                   onkeydown="if(key === 'Enter') this.form.submit();">
+            <label>
+                <input type="text" name="query" class="search-input" placeholder="Поиск файлов и папок..."
+                       onkeydown="if(key === 'Enter') this.form.submit();">
+            </label>
         </form>
     </div>
     <div class="user-controls">

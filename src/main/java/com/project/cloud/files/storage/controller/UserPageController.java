@@ -177,7 +177,7 @@ public class UserPageController {
 
     @PostMapping("/delete-content")
     public String deleteContent(@RequestParam String path, @RequestParam String name,
-                                @RequestParam boolean isFile, HttpSession session) throws Exception {
+                                @RequestParam boolean isFile, HttpSession session) {
 
         if (!path.contains("Trash")) {
             moveContent(path, name, "Trash", isFile, session);
