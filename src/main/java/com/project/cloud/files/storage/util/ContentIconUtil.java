@@ -22,6 +22,8 @@ public class ContentIconUtil {
             return "/icon/mp4.png";
         } else if (lowerCaseFileName.endsWith(".xlsx") || lowerCaseFileName.endsWith(".xls")) {
             return "/icon/xl.png";
+        } else if (lowerCaseFileName.endsWith(".java")) {
+            return "/icon/java.png";
         } else {
             int lastDotIndex = lowerCaseFileName.lastIndexOf('.');
             if (lastDotIndex == -1 || lastDotIndex == lowerCaseFileName.length() - 1) {

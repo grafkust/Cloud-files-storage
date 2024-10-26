@@ -15,6 +15,7 @@ public class ContentDto {
     private boolean isFile;
     private String path;
 
+
     public ContentDto(String name, String lastModified, String iconPath, boolean isFile) {
         this.name = name;
         this.lastModified = lastModified;

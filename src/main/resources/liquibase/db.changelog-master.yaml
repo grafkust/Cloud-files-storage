@@ -1,4 +1,4 @@
 databaseChangeLog:
-  - includeAll:
-      path: changeset/
+  - include:
+      file: changeset/V1_init.sql
       relativeToChangelogFile: true

@@ -1,13 +1,13 @@
 package com.project.cloud.files.storage.service;
 
 import com.project.cloud.files.storage.model.entity.user.User;
+import freemarker.template.Configuration;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import jakarta.mail.internet.MimeMessage;
-import freemarker.template.Configuration;
 
 import java.io.StringWriter;
 import java.util.HashMap;

@@ -4,7 +4,7 @@ import com.project.cloud.files.storage.model.entity.user.Role;
 import com.project.cloud.files.storage.model.entity.user.User;
 import com.project.cloud.files.storage.model.entity.userDetails.MyUserDetails;
 import com.project.cloud.files.storage.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,11 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
 
-
-    @Autowired
-    private  UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws InternalAuthenticationServiceException {
@@ -31,8 +30,8 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user.isEmpty()) {
             throw new InternalAuthenticationServiceException("User with username '" + username + "' not found");
         }
-
         return create(user.get());
+
     }
 
     private MyUserDetails create(User user) {

@@ -46,11 +46,15 @@ spring:
 
   jpa:
     show-sql: true
+    open-in-view: false
 
   liquibase:
     change-log: classpath:liquibase/db.changelog-master.yaml
     enabled: true
+
     default-schema: ${DB_SCHEMA}
+    drop-first: false
+
 
 minio:
   bucket: ${MINIO_BUCKET}

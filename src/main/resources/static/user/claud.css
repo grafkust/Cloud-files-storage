@@ -14,7 +14,7 @@ body {
     font-size: 16px; /* Увеличенный базовый размер шрифта */
 }
 
-/* Header styles */
+
 header {
     background-color: #2a2a2a;
     padding: 1.5rem 2.5rem; /* Увеличенные отступы */
@@ -25,6 +25,7 @@ header {
 }
 
 .search-container {
+
     width: 400px; /* Увеличенная ширина поля поиска */
 }
 
@@ -60,17 +61,17 @@ header {
 }
 
 .logout-btn:hover {
-    background-color: #555;
+    background-color: darkred;
 }
 
-/* Main content styles */
+
 main {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
 
-/* Sidebar styles */
+
 .sidebar {
     width: 300px; /* Увеличенная ширина */
     background-color: #2a2a2a;
@@ -159,7 +160,7 @@ main {
     cursor: default;
 }
 
-/* Content styles */
+
 .content {
     flex: 1;
     padding: 1.5rem;
@@ -171,7 +172,6 @@ main {
 
 
 
-/* Стили для скроллбара (WebKit browsers) */
 .content::-webkit-scrollbar {
     width: 8px;
 }
@@ -228,6 +228,20 @@ main {
     gap: 0.75rem;
 }
 
+.delete-btn {
+    padding: 0.75rem;
+    background-color: #444;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+
+
 .action-btn {
     padding: 0.75rem;
     background-color: #444;
@@ -243,9 +257,8 @@ main {
 .action-btn:hover {
     background-color: #555;
 }
-
-.action-btn.delete:hover {
-    background-color: #d32f2f;
+#delete-btn:hover {
+    background-color: darkred;
 }
 
 .action-btn img {
@@ -253,7 +266,7 @@ main {
     height: 20px;
 }
 
-/* Footer styles */
+
 footer {
     background-color: #2a2a2a;
     padding: 1.5rem 2.5rem; /* Увеличенные отступы */
@@ -277,7 +290,7 @@ footer {
     color: #888;
 }
 
-/* Style for file input */
+
 .file-input {
     display: none;
 }
@@ -287,7 +300,7 @@ input[type="file"] {
     display: none;
 }
 
-/* Стилизованная кнопка для загрузки файлов */
+
 .custom-file-upload {
     display: inline-block;
     padding: 10px 20px;
@@ -302,3 +315,105 @@ input[type="file"] {
 .custom-file-upload:hover {
     background-color: #45a049; /* Темно-зеленый при наведении */
 }
+
+
+
+
+
+.moving-panel {
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #3a3a3a;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.moving-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.moving-header h3 {
+    color: #fff;
+    margin: 0;
+}
+
+.moving-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.folder-tree {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.tree-item {
+    flex: 0 0 200px;
+}
+
+.folder-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.folder-link:hover {
+    background-color: #3a3a3a;
+}
+
+.folder-link.selected {
+    background-color: #4a4a4a;
+}
+
+.folder-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+
+.action-btn:hover {
+    background-color: #45a049;
+}
+
+.action-btn.cancel {
+    background-color: #666;
+}
+
+.action-btn.cancel:hover {
+    background-color: #888;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

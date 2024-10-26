@@ -8,7 +8,10 @@
 <body>
 <header>
     <div class="search-container">
-        <input type="text" class="search-input" placeholder="Поиск файлов и папок...">
+        <form action="/search-content" method="get">
+            <input type="text" name="query" class="search-input" placeholder="Поиск файлов и папок..."
+                   onkeydown="if(key === 'Enter') this.form.submit();">
+        </form>
     </div>
     <div class="user-controls">
         <span class="username" th:text="${username}"></span>
@@ -19,25 +22,26 @@
 </header>
 
 <main>
+
     <aside class="sidebar">
         <div class="sidebar-top">
 
-            <form action="/upload-file" method="post" enctype="multipart/form-data">
+            <form action="/upload-content" method="post" enctype="multipart/form-data">
                 <label class="sidebar-btn">
                     <img src="/icon/upload-file.png" alt="Upload" class="btn-icon">
-                    <input type="file" name="file"
-                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java"
+                    <input type="file" name="data"
+                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg"
                            onchange="this.form.submit()">
                     <input type="hidden" name="path" th:value="${path}">
                     Загрузить файл
                 </label>
             </form>
 
-            <form action="/upload-folder" method="post" enctype="multipart/form-data">
+            <form action="/upload-content" method="post" enctype="multipart/form-data">
                 <label class="sidebar-btn">
                     <img src="/icon/upload-folder.png" alt="Upload" class="btn-icon">
-                    <input type="file" name="files" webkitdirectory="" directory=""
-                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java"
+                    <input type="file" name="data" webkitdirectory="" directory=""
+                           accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg"
                            onchange="this.form.submit()">
                     <input type="hidden" name="path" th:value="${path}">
                     Загрузить папку
@@ -52,16 +56,21 @@
                     Создать папку
                 </button>
                 <div style="display:none;">
-                    <input type="text" class="search-input" name="name" placeholder="Введите имя папки"
-                           onkeydown="if(key === 'Enter') this.form.submit();">
+                    <label>
+                        <input type="text" class="search-input" name="name" placeholder="Введите имя папки"
+                               onkeydown="if(key === 'Enter') this.form.submit();">
+                    </label>
                 </div>
             </form>
 
         </div>
-        <button class="sidebar-btn">
-            <img src="/icon/trash.png" alt="Trash" class="btn-icon">
-            Корзина
-        </button>
+
+        <form action="/trash" method="get">
+            <button class="sidebar-btn">
+                <img src="/icon/trash.png" alt="Trash" class="btn-icon">
+                Корзина
+            </button>
+        </form>
     </aside>
 
     <section class="content">
@@ -74,50 +83,64 @@
                     <img src="/icon/back.png" alt="Back">
                 </button>
             </form>
+
             <h2 class="path-item current-path"
-                th:text="${path.contains('/')} ? ${path.substring(path.indexOf('/') + 1)} : Файлы"></h2>
+                th:with="searchResult='Вот что мне удалось найти по запросу: '"
+                th:text="${!query.isEmpty()} ? ${searchResult + query} : (${path.contains('/')} ? ${path.substring(path.indexOf('/') + 1)} : 'Файлы')">
+            </h2>
         </div>
 
-        <div th:each="file : ${data}">
+
+        <div th:each="file : ${content}">
             <div class="folder-item"
-                 th:data-path="${path}"
-                 th:data-file="${file}"
+                 th:current-path="${path}"
+                 th:file-name="${file.name}"
+                 th:file-path="${file.path}"
                  ondblclick="redirectToFolder(this)">
 
-                <img th:src="${ (file.endsWith('.pdf') ? '/icon/pdf.png' :
-        (file.endsWith('.jpg') || file.endsWith('.jpeg') ? '/icon/jpg.png' :
-        (file.endsWith('.png') ? '/icon/image-icon.png' :
-        (file.endsWith('.doc') || file.endsWith('.docx') ? '/icon/word.png' :
-        (file.endsWith('.mp3') ? '/icon/mp3.png' :
-        (file.endsWith('.mp4') ? '/icon/mp4.png' :
-        (!file.contains('.') ? '/icon/folder.png' :
-        '/icon/file.png')))))))
-    }" alt="Folder" class="folder-icon">
+                <img th:src="${file.iconPath}" alt="Content icon" class="folder-icon">
 
                 <div class="folder-info">
-                    <span class="folder-name" th:text="${file}"></span>
-                    <span class="folder-date" th:text="${'12.12.1212'}"></span>
+                    <span class="folder-name" th:text="${file.name}"></span>
+                    <span class="folder-date" th:text="${file.lastModified}"></span>
                     <div class="folder-actions">
 
-                        <form action="/download-file" method="get">
+
+                        <form action="/download-content" method="get">
                             <input type="hidden" name="path" th:value="${path}">
-                            <input type="hidden" name="name" th:value="${file}">
+                            <input type="hidden" name="name" th:value="${file.name}">
+                            <input type="hidden" name="isFile" th:value="${file.isFile}">
                             <button class="action-btn">
                                 <img src="/icon/download.png" alt="Download">
                             </button>
                         </form>
 
-                        <form th:action="${file.contains('.')} ? '/delete-file' : '/delete-folder'" method="post">
+
+                        <form action="/select-destination" method="get">
                             <input type="hidden" name="path" th:value="${path}">
-                            <input type="hidden" name="name" th:value="${file}">
-                            <button class="action-btn">
+                            <input type="hidden" name="name" th:value="${file.name}">
+                            <input type="hidden" name="isFile" th:value="${file.isFile}">
+                            <button type="submit" class="action-btn">
+                                <img src="/icon/move.png" alt="Move">
+                            </button>
+                        </form>
+
+
+                        <form action="/delete-content" method="post">
+                            <input type="hidden" name="path" th:value="${path}">
+                            <input type="hidden" name="name" th:value="${file.name}">
+                            <input type="hidden" name="isFile" th:value="${file.isFile()}">
+                            <button class="action-btn" id="delete-btn">
                                 <img src="/icon/delete.png" alt="Delete">
                             </button>
                         </form>
 
+
                     </div>
                 </div>
             </div>
+
+
         </div>
 
     </section>
@@ -130,9 +153,16 @@
 
 <script>
     function redirectToFolder(element) {
-        var path = element.getAttribute('data-path');
-        var file = element.getAttribute('data-file');
-        location.href = '/?path=' + path + '/' + file;
+        var currentPath = element.getAttribute('current-path');
+        var fileName = element.getAttribute('file-name');
+        var filePath = element.getAttribute('file-path');
+        if (fileName.includes('.') && fileName.split('.').pop().length <= 4) {
+            return;
+        }
+        if (filePath == null)
+            location.href = '/?path=' + currentPath + "/" + fileName + "/";
+        else
+            location.href = '/?path=' + filePath;
     }
 </script>
 

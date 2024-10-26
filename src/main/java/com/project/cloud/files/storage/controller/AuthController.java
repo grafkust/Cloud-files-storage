@@ -3,7 +3,7 @@ package com.project.cloud.files.storage.controller;
 import com.project.cloud.files.storage.mapper.UserMapper;
 import com.project.cloud.files.storage.model.dto.UserDto;
 import com.project.cloud.files.storage.model.entity.user.User;
-import com.project.cloud.files.storage.service.MyUserDetailsService;
+import com.project.cloud.files.storage.service.MailService;
 import com.project.cloud.files.storage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,12 +19,13 @@ public class AuthController {
 
     private final UserMapper userMapper;
     private final UserService userService;
-
+    private final MailService mailService;
 
     @GetMapping("/login")
-    private String login(Model model) {
+    private String login(Model model, @RequestParam(required = false) String reg) {
         model.addAttribute("illegalArgument", "no exception");
         model.addAttribute("username");
+        model.addAttribute("reg", reg);
         return "auth/login";
     }
 
@@ -49,10 +50,10 @@ public class AuthController {
             model.addAttribute("fieldNotUnique", "no exception");
             return "auth/registration";
         }
-
         User user = userMapper.toEntity(userDto);
         userService.create(user);
-        return "redirect:/auth/login";
+        mailService.sendEmail(user);
+        return "redirect:/auth/login?reg=success";
     }
 
 
