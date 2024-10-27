@@ -32,12 +32,11 @@ public class UserPageController {
         if (!fileService.isDirectoryExists(userRootPath))
             fileService.createFolder(userRootPath);
 
-        return String.format("redirect:/?path=%s", userRootPath);
+        return "redirect:/";
     }
 
 
     //TODO:
-    // 1. Remove userRootPath from url
     // 2. Add UTF-8 encoding to correctly handle Russian symbols
     @GetMapping("/")
     public String generateUserPage(HttpSession session, Model model,
@@ -45,54 +44,48 @@ public class UserPageController {
                                    @RequestParam(required = false) String query) throws Exception {
 
         String username = (String) session.getAttribute("username");
-        Long id = userService.getIdByUsername(username);
-        String userRootPath = String.format("user-%d-files", id);
+        String userRootPath = getUserRootPath(session);
 
-        if (path == null || !fileService.isDirectoryExists(path)) {
-            return String.format("redirect:/?path=%s", userRootPath);
+        String innerPath = createInnerPath(path, userRootPath);
+        String publicPath = createPublicPath(innerPath, userRootPath);
+
+        if (!fileService.isDirectoryExists(innerPath)) {
+            return "redirect:/";
         }
 
-        if (path.endsWith("/"))
-            path = path.substring(0, path.length() - 1);
-
         List<ContentDto> pageContent;
-        String request = "";
 
         if (query != null) {
-            pageContent = fileService.searchFiles(id, query);
-            model.addAttribute("content", pageContent);
-            request = query;
-        } else if (path.equals("Trash")) {
-            String trashPath = String.format("%s/Trash/", userRootPath);
-            pageContent = fileService.getListFilesInFolder(trashPath);
-        } else {
-            pageContent = fileService.getListFilesInFolder(path);
+            pageContent = fileService.searchFiles(userRootPath, query);
+        }
+        else {
+            pageContent = fileService.getListFilesInFolder(innerPath);
         }
 
         model.addAttribute("username", username);
         model.addAttribute("content", pageContent);
-        model.addAttribute("path", path);
-        model.addAttribute("query", request);
+        model.addAttribute("path", publicPath);
+        model.addAttribute("query", query != null ? query : "");
         return "user/user-claud";
     }
-
 
     //TODO: Add UTF-8 encoding to correctly handle Russian symbols
     @GetMapping("/back")
     public String back(@RequestParam String path) {
-        int lastSlashIndex = path.lastIndexOf('/');
 
-        if (lastSlashIndex > 0)
-            path = path.substring(0, lastSlashIndex);
+        if (!path.contains("/"))
+            return "redirect:/";
 
-        return String.format("redirect:/?path=%s", path);
+        return String.format("redirect:/?path=%s", path.substring(0, path.lastIndexOf('/')));
     }
 
-    //TODO: Eliminate this method
-    @GetMapping("/trash")
-    public String trash(HttpSession session) {
-        String userRootPath = getUserRootPath(session);
-        return String.format("redirect:/?path=%s/Trash", userRootPath);
+
+    private String createPublicPath(String path, String userRootPath) {
+        return path.equals(userRootPath) ? "" : path.substring(userRootPath.length() + 1);
+    }
+
+    private String createInnerPath(String path, String userRootPath) {
+        return (path == null || path.isEmpty()) ? userRootPath : String.format("%s/%s", userRootPath, path);
     }
 
     private String getUserRootPath(HttpSession session) {
@@ -100,4 +93,5 @@ public class UserPageController {
         Long id = userService.getIdByUsername(username);
         return String.format("user-%d-files", id);
     }
+
 }

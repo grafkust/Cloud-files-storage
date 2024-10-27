@@ -64,3 +64,4 @@ minio:
 
 application:
   url: ${APPLICATION_URL}
+  date-pattern: ${APPLICATION_DATE_PATTERN}

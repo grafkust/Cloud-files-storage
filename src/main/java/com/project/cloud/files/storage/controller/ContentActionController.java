@@ -25,42 +25,51 @@ public class ContentActionController {
 
     // TODO: Check folder name uniqueness in parent path
     @PostMapping("/create-folder")
-    public String createFolder(@RequestParam String path, @RequestParam String name) {
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
+    public String createFolder(@RequestParam String path, @RequestParam String name, HttpSession session) {
+        String userRootPath = getUserRootPath(session);
+        String innerPath = createInnerPath(path, userRootPath);
+        String publicPath = createPublicPath(innerPath, userRootPath);
+
+        if (publicPath.endsWith("/")) {
+            publicPath = publicPath.substring(0, path.length() - 1);
         }
-        String folderPath = String.format("%s/%s", path, name);
+        String folderPath = String.format("%s/%s", innerPath, name);
         fileService.createFolder(folderPath);
 
-        return String.format("redirect:/?path=%s", path);
+        return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 
 
     // TODO: Add functionality to navigate to file's parent directory from search results
     @GetMapping("/search-content")
-    public String searchContent(@RequestParam String query, HttpSession session) {
-        String username = (String) session.getAttribute("username");
-        Long id = userService.getIdByUsername(username);
-        String userRootPath = String.format("user-%d-files", id);
-        return String.format("redirect:/?path=%s&query=%s", userRootPath, query);
+    public String searchContent(@RequestParam String query) {
+        return String.format("redirect:/?query=%s", query);
     }
 
 
     @PostMapping("/upload-content")
     public String uploadContent(@RequestParam("data") MultipartFile[] data,
-                                @RequestParam String path) throws IOException {
+                                @RequestParam String path, HttpSession session) throws IOException {
+
+        String userRootPath = getUserRootPath(session);
+        String innerPath = createInnerPath(path, userRootPath);
+        String publicPath = createPublicPath(innerPath, userRootPath);
 
         for (MultipartFile file : data) {
-            fileService.upload(file, path);
+            fileService.upload(file, innerPath);
         }
-        return String.format("redirect:/?path=%s", path);
+        return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
 
     }
 
 
     @GetMapping("/download-content")
     public void downloadContent(@RequestParam String path, @RequestParam String name,
-                                @RequestParam boolean isFile, HttpServletResponse response) {
+                                @RequestParam boolean isFile, HttpServletResponse response, HttpSession session) {
+
+        String userRootPath = getUserRootPath(session);
+        String innerPath = createInnerPath(path, userRootPath);
+        String contentPath = String.format("%s/%s", innerPath, name);
 
         if (isFile) {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
@@ -71,7 +80,7 @@ public class ContentActionController {
             response.setContentType("application/zip");
         }
 
-        try (InputStream inputStream = fileService.downloadContent(path + "/" + name, isFile);
+        try (InputStream inputStream = fileService.downloadContent(contentPath, isFile);
              OutputStream outputStream = response.getOutputStream()) {
 
             byte[] buffer = new byte[8192];
@@ -91,13 +100,12 @@ public class ContentActionController {
     public String moveContent(@RequestParam String path, @RequestParam String name,
                               @RequestParam String destinationPath, @RequestParam boolean isFile, HttpSession session) {
 
-        String oldPath = isFile ? path + "/" + name : path + "/" + name + "/";
+        String userRootPath = getUserRootPath(session);
+        String innerPath = createInnerPath(path, userRootPath);
+        String oldPath = isFile ? innerPath + "/" + name : innerPath + "/" + name + "/";
         if (destinationPath.equals("Trash")) {
-            String username = (String) session.getAttribute("username");
-            Long userId = userService.getIdByUsername(username);
-            destinationPath = "user-" + userId + "-files/Trash/";
+            destinationPath = userRootPath + "/Trash/";
             fileService.moveContent(oldPath, destinationPath, isFile);
-
             return String.format("redirect:/?path=%s", path);
         }
 
@@ -107,19 +115,38 @@ public class ContentActionController {
 
 
     // TODO: Implement daily automatic cleanup of expired files in trash
+    // TODO: Add method to restore files from trash
     @PostMapping("/delete-content")
     public String deleteContent(@RequestParam String path, @RequestParam String name,
                                 @RequestParam boolean isFile, HttpSession session) {
 
-        if (!path.contains("Trash")) {
+        String userRootPath = getUserRootPath(session);
+        String innerPath = createInnerPath(path, userRootPath);
+        String publicPath = createPublicPath(innerPath, userRootPath);
+
+        if (!innerPath.contains("Trash")) {
             moveContent(path, name, "Trash", isFile, session);
         } else
-            fileService.deleteContent(path, name, isFile);
+            fileService.deleteContent(innerPath, name, isFile);
 
-        return String.format("redirect:/?path=%s", path);
+        return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 
-    // TODO: Add method to restore files from trash
 
+
+
+    private String createPublicPath(String path, String userRootPath) {
+        return path.equals(userRootPath) ? "" : path.substring(userRootPath.length() + 1);
+    }
+
+    private String createInnerPath(String path, String userRootPath) {
+        return (path == null || path.isEmpty()) ? userRootPath : String.format("%s/%s", userRootPath, path);
+    }
+
+    private String getUserRootPath(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        Long id = userService.getIdByUsername(username);
+        return String.format("user-%d-files", id);
+    }
 
 }

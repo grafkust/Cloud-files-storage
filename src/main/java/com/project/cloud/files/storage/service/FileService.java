@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,11 +33,15 @@ public class FileService {
 
     // TODO: Implement logging for this class
     // TODO: Shrink this class
+    // TODO: Add boolean field haveExtension in ContentDto
+
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
     private final MinioOperation minioOperation;
     private String MAIN_BUCKET;
-    private final String DATE_PATTERN = "dd.MM.yyyy HH:mm";
+
+    @Value("${application.date-pattern}")
+    private String DATE_PATTERN;
 
     @PostConstruct
     private void init() {
@@ -48,6 +53,9 @@ public class FileService {
         List<ContentDto> files = new ArrayList<>();
 
         String prefix = correctPath(path);
+
+        if (path.endsWith("/"))
+            path = path.substring(0, path.length() - 1);
 
         Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, prefix, false);
 
@@ -173,13 +181,12 @@ public class FileService {
         }
     }
 
-    public List<ContentDto> searchFiles(Long userId, String searchName) throws Exception {
+    public List<ContentDto> searchFiles(String userRootPath, String searchName) throws Exception {
 
-        String userBucket = "user-" + userId + "-files/";
         List<ContentDto> searchResults = new ArrayList<>();
 
         try {
-            Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, userBucket, true);
+            Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, userRootPath, true);
 
             for (Result<Item> result : results) {
                 Item item = result.get();
@@ -188,7 +195,11 @@ public class FileService {
                 boolean isFile = !objectName.endsWith("/");
                 String lastModifiedDate, iconPath;
 
+
                 if (fileName.toLowerCase().contains(searchName.toLowerCase())) {
+
+                    if (fileName.equals(userRootPath))
+                        continue;
 
                     if (isFile) {
                         lastModifiedDate = getLastModifiedDate(objectName);
@@ -279,11 +290,16 @@ public class FileService {
 
 
     @SneakyThrows
-    public InputStream downloadContent(String path, boolean isFile) {
-        if (isFile)
+    public InputStream downloadContent(String path,  boolean isFile) {
+
+        if (isFile) {
+
             return downloadFile(path);
-        else
+        }
+        else {
+
             return downloadFolder(path);
+        }
     }
 
     @SneakyThrows

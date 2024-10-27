@@ -19,6 +19,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String username = authentication.getName();
         HttpSession session = request.getSession();
         session.setAttribute("username", username);
-        response.sendRedirect("/user");
+        response.sendRedirect("/prepare-main-directories");
     }
 }

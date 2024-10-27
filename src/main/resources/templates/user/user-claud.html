@@ -8,11 +8,12 @@
 <body>
 <header>
     <div class="search-container">
-        <form action="/search-content" method="get">
+        <form action="/" method="get">
             <label>
                 <input type="text" name="query" class="search-input" placeholder="Поиск файлов и папок..."
                        onkeydown="if(key === 'Enter') this.form.submit();">
             </label>
+
         </form>
     </div>
     <div class="user-controls">
@@ -67,7 +68,8 @@
 
         </div>
 
-        <form action="/trash" method="get">
+        <form action="/" method="get">
+            <input type="hidden" name="path" value="Trash">
             <button class="sidebar-btn">
                 <img src="/icon/trash.png" alt="Trash" class="btn-icon">
                 Корзина
@@ -80,7 +82,7 @@
         <div class="path-navigation">
 
             <form action="/back" method="get">
-                <button class="back-button" th:style="${path.contains('/')} ? ''  : 'display: none;'">
+                <button class="back-button" th:style="${path != null && !path.isEmpty()} ? '' : 'display: none;'">
                     <input type="hidden" name="path" th:value="${path}">
                     <img src="/icon/back.png" alt="Back">
                 </button>
@@ -88,10 +90,9 @@
 
             <h2 class="path-item current-path"
                 th:with="searchResult='Вот что мне удалось найти по запросу: '"
-                th:text="${!query.isEmpty()} ? ${searchResult + query} : (${path.contains('/')} ? ${path.substring(path.indexOf('/') + 1)} : 'Файлы')">
+                th:text="${!query.isEmpty()} ? ${searchResult + query} : (${!path.isEmpty() || path.contains('/')} ? ${path} : 'Файлы')">
             </h2>
         </div>
-
 
         <div th:each="file : ${content}">
             <div class="folder-item"
@@ -155,16 +156,29 @@
 
 <script>
     function redirectToFolder(element) {
-        var currentPath = element.getAttribute('current-path');
-        var fileName = element.getAttribute('file-name');
-        var filePath = element.getAttribute('file-path');
-        if (fileName.includes('.') && fileName.split('.').pop().length <= 4) {
-            return;
+        const currentPath = element.getAttribute('current-path');
+        const fileName = element.getAttribute('file-name');
+        const filePath = element.getAttribute('file-path');
+        const isFile = fileName.includes('.') && fileName.split('.').pop().length <= 4;
+
+        if (isFile && !filePath) return;
+
+        let path;
+
+        if (!filePath) {
+            path = currentPath ? `${currentPath}` + '/' + `${fileName}` : `${fileName}`;
+        } else {
+            if (isFile) {
+                const fileInRootDir = filePath.indexOf('/') === filePath.lastIndexOf('/');
+                if (fileInRootDir)
+                    location.href = `/`;
+                else
+                    path = filePath.substring(filePath.indexOf('/') + 1, filePath.lastIndexOf('/'));
+            }
+            else
+                path = filePath.substring(filePath.indexOf('/') + 1);
         }
-        if (filePath == null)
-            location.href = '/?path=' + currentPath + "/" + fileName + "/";
-        else
-            location.href = '/?path=' + filePath;
+        location.href = `/?path=${path}`;
     }
 </script>
 
