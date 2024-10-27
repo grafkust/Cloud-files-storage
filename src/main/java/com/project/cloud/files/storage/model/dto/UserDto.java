@@ -15,7 +15,6 @@ import org.hibernate.validator.constraints.Length;
 @NotNull
 public class UserDto {
 
-
     @Length(min = 3, max = 50, message = "Username length should be between 3 and 50 symbols")
     private String username;
 

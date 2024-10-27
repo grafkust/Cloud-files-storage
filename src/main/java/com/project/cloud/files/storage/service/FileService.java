@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 public class FileService {
 
     // TODO: Implement logging for this class
+    // TODO: Shrink this class
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
     private final MinioOperation minioOperation;
@@ -41,8 +42,6 @@ public class FileService {
     private void init() {
         MAIN_BUCKET = minioProperties.getBucket();
     }
-
-
 
     public List<ContentDto> getListFilesInFolder(String path) throws Exception {
 

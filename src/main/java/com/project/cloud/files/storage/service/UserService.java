@@ -38,12 +38,11 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
+
     public Long getIdByUsername(String username) {
         User user = getByUsername(username);
         return user.getId();
     }
-
-
 
     private void checkFieldsOnUnique(User user) {
 
@@ -64,6 +63,5 @@ public class UserService {
         UserDto userDto = userMapper.toDto(user);
         exception.setUserDto(userDto);
         throw exception;
-
     }
 }

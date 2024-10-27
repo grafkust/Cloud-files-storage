@@ -14,7 +14,6 @@ public class MinioOperation {
 
     private final MinioClient minioClient;
 
-
     @SneakyThrows
     public void remove(String mainBucket, String path) {
         minioClient.removeObject(RemoveObjectArgs.builder()

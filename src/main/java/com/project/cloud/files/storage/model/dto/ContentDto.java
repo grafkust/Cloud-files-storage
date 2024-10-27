@@ -1,6 +1,5 @@
 package com.project.cloud.files.storage.model.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,12 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ContentDto {
+
     private String name;
     private String lastModified;
     private String iconPath;
     private boolean isFile;
     private String path;
-
 
     public ContentDto(String name, String lastModified, String iconPath, boolean isFile) {
         this.name = name;

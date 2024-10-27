@@ -5,6 +5,7 @@ import freemarker.template.Configuration;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class MailService {
     private final Configuration configuration;
     private final JavaMailSender mailSender;
 
+    @Value("${application.url}")
+    private String applicationUrl;
+
     @SneakyThrows
     public void sendEmail(User user) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -33,12 +37,11 @@ public class MailService {
 
     @SneakyThrows
     private String getRegistrationEmailContent(User user) {
-        final String url = "http://localhost:8087/";
 
         StringWriter writer = new StringWriter();
         Map<String, Object> model = new HashMap<>();
         model.put("username", user.getUsername());
-        model.put("url", url);
+        model.put("url", applicationUrl);
         configuration.getTemplate("mail.ftlh").process(model, writer);
         return writer.getBuffer().toString();
     }

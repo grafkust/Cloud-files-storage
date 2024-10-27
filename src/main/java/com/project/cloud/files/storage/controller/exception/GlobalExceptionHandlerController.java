@@ -17,7 +17,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 
-
+// TODO: Add error handling for large file/folder uploads
 @ControllerAdvice
 public class GlobalExceptionHandlerController {
 
