@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
+
 @RequestMapping("/auth")
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class AuthController {
     private final UserMapper userMapper;
     private final UserService userService;
     private final MailService mailService;
+
 
     @GetMapping("/login")
     private String login(Model model, @RequestParam(required = false) String reg) {
@@ -55,6 +58,8 @@ public class AuthController {
         mailService.sendEmail(user);
         return "redirect:/auth/login?reg=success";
     }
+
+
 
 
 }

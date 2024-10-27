@@ -64,4 +64,6 @@ minio:
 
 application:
   url: ${APPLICATION_URL}
-  date-pattern: ${APPLICATION_DATE_PATTERN}
+  date-pattern: ${APPLICATION_DATE_TIME_FORMAT_PATTERN}
+  trash:
+    retention-days: ${TRASH_RETENTION_DAYS}

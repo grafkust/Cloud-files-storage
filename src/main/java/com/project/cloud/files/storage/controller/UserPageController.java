@@ -54,8 +54,7 @@ public class UserPageController {
 
         if (query != null) {
             pageContent = fileService.searchFiles(userRootPath, query);
-        }
-        else {
+        } else {
             pageContent = fileService.getListFilesInFolder(innerPath);
         }
 
@@ -76,7 +75,6 @@ public class UserPageController {
 
         return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
     }
-
 
 
 

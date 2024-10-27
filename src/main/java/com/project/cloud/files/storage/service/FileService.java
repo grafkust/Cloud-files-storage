@@ -14,11 +14,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,7 +44,10 @@ public class FileService {
     private String MAIN_BUCKET;
 
     @Value("${application.date-pattern}")
-    private String DATE_PATTERN;
+    private String DATE_TIME_FORMAT_PATTERN;
+
+    @Value("${application.trash.retention-days}")
+    private Integer TRASH_RETENTION_DAYS;
 
     @PostConstruct
     private void init() {
@@ -85,10 +91,10 @@ public class FileService {
         return files;
     }
 
-    private String getLastModifiedDate(String objectName) {
+    public String getLastModifiedDate(String objectName) {
         StatObjectResponse itemStat = minioOperation.getStatObject(MAIN_BUCKET, objectName);
-        ZonedDateTime lastModified = itemStat.lastModified();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+        ZonedDateTime lastModified = itemStat.lastModified().withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
         return lastModified.format(formatter);
     }
 
@@ -240,12 +246,9 @@ public class FileService {
 
     @SneakyThrows
     public void moveContent(String oldPath, String destinationPath, boolean isFile) {
-
-
         if (isFile) {
             moveFile(oldPath, destinationPath);
         } else moveFolder(oldPath, destinationPath);
-
     }
 
     @SneakyThrows
@@ -288,18 +291,9 @@ public class FileService {
         return path.endsWith("/") ? path : path + "/";
     }
 
-
     @SneakyThrows
-    public InputStream downloadContent(String path,  boolean isFile) {
-
-        if (isFile) {
-
-            return downloadFile(path);
-        }
-        else {
-
-            return downloadFolder(path);
-        }
+    public InputStream downloadContent(String path, boolean isFile) {
+        return isFile ? downloadFile(path) : downloadFolder(path);
     }
 
     @SneakyThrows
@@ -314,7 +308,6 @@ public class FileService {
 
         Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, folderPath, true);
         File tempZipFile = File.createTempFile("download_", ".zip");
-
 
         try (FileOutputStream outputStream = new FileOutputStream(tempZipFile);
              ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
@@ -343,6 +336,50 @@ public class FileService {
             }
         }
         return new DeleteOnCloseFileInputStream(tempZipFile);
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    @SneakyThrows
+    private void removeExpiredTrashItems() {
+        Iterable<Result<Item>> usersRootDirectories = minioOperation.getListOfObjects(MAIN_BUCKET, null, false);
+        List<String> usersTrashDirectories = getUsersTrashDirectory(usersRootDirectories);
+        for (String trashDirectory : usersTrashDirectories) {
+            removeExpiredTrashItems(trashDirectory);
+        }
+    }
+
+    @SneakyThrows
+    private List<String> getUsersTrashDirectory(Iterable<Result<Item>> usersRootDirectories) {
+        List<String> usersTrashDirectories = new ArrayList<>();
+        for (Result<Item> rootDirectory : usersRootDirectories) {
+            Item item = rootDirectory.get();
+            String rootDirectoryPath = item.objectName();
+            String trashDirectoryPath = String.format("%sTrash/", rootDirectoryPath);
+            usersTrashDirectories.add(trashDirectoryPath);
+        }
+        return usersTrashDirectories;
+    }
+
+    @SneakyThrows
+    private void removeExpiredTrashItems(String trashDirectory) {
+        Iterable<Result<Item>> trashContent = minioOperation.getListOfObjects(MAIN_BUCKET, trashDirectory, true);
+        for (Result<Item> result : trashContent) {
+            Item item = result.get();
+            String trashItemPath = item.objectName();
+
+            if (trashItemPath.equals(trashDirectory))
+                continue;
+
+            if (isTrashItemExpired(trashItemPath))
+                minioOperation.remove(MAIN_BUCKET, trashItemPath);
+        }
+    }
+
+    private boolean isTrashItemExpired(String trashItemPath) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
+        LocalDateTime cleanupThreshold = LocalDateTime.now().minusDays(TRASH_RETENTION_DAYS);
+        LocalDateTime lastModifiedDate = LocalDateTime.parse(getLastModifiedDate(trashItemPath), formatter);
+        return lastModifiedDate.isBefore(cleanupThreshold);
     }
 }
 
