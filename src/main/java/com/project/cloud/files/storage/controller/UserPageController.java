@@ -2,7 +2,7 @@ package com.project.cloud.files.storage.controller;
 
 import com.project.cloud.files.storage.model.dto.ContentDto;
 import com.project.cloud.files.storage.service.FileService;
-import com.project.cloud.files.storage.service.UserService;
+import com.project.cloud.files.storage.util.PathUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserPageController {
 
-    private final UserService userService;
     private final FileService fileService;
+    private final PathUtil pathUtil;
 
     @GetMapping("/prepare-main-directories")
     public String createMainDirectories(HttpSession session) {
 
-        String userRootPath = getUserRootPath(session);
+        String userRootPath = pathUtil.getUserRootPath(session);
         String trashPath = userRootPath + "/Trash/";
 
         if (!fileService.isDirectoryExists(trashPath))
@@ -35,19 +35,16 @@ public class UserPageController {
         return "redirect:/";
     }
 
-
-    //TODO:
-    // 2. Add UTF-8 encoding to correctly handle Russian symbols
     @GetMapping("/")
     public String generateUserPage(HttpSession session, Model model,
                                    @RequestParam(required = false) String path,
                                    @RequestParam(required = false) String query) throws Exception {
 
         String username = (String) session.getAttribute("username");
-        String userRootPath = getUserRootPath(session);
+        String userRootPath = pathUtil.getUserRootPath(session);
 
-        String innerPath = createInnerPath(path, userRootPath);
-        String publicPath = createPublicPath(innerPath, userRootPath);
+        String innerPath = pathUtil.createInnerPath(path, userRootPath);
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
         if (!fileService.isDirectoryExists(innerPath)) {
             return "redirect:/";
@@ -69,29 +66,20 @@ public class UserPageController {
         return "user/user-claud";
     }
 
-    //TODO: Add UTF-8 encoding to correctly handle Russian symbols
     @GetMapping("/back")
     public String back(@RequestParam String path) {
 
         if (!path.contains("/"))
             return "redirect:/";
 
-        return String.format("redirect:/?path=%s", path.substring(0, path.lastIndexOf('/')));
+        path = path.substring(0, path.lastIndexOf('/'));
+
+        return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
     }
 
 
-    private String createPublicPath(String path, String userRootPath) {
-        return path.equals(userRootPath) ? "" : path.substring(userRootPath.length() + 1);
-    }
 
-    private String createInnerPath(String path, String userRootPath) {
-        return (path == null || path.isEmpty()) ? userRootPath : String.format("%s/%s", userRootPath, path);
-    }
 
-    private String getUserRootPath(HttpSession session) {
-        String username = (String) session.getAttribute("username");
-        Long id = userService.getIdByUsername(username);
-        return String.format("user-%d-files", id);
-    }
+
 
 }
