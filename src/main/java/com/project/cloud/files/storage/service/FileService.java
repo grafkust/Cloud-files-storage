@@ -34,9 +34,8 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 public class FileService {
 
-    // TODO: Implement logging for this class
-    // TODO: Shrink this class
-    // TODO: Add boolean field haveExtension in ContentDto
+    //TODO: Implement logging for this class
+    //TODO: Shrink this class
 
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
@@ -132,6 +131,21 @@ public class FileService {
                 .build());
     }
 
+    public boolean isFolderNameUnique(String path, String name) throws Exception {
+        List<ContentDto> listFilesInFolder = getListFilesInFolder(path);
+        for (ContentDto item : listFilesInFolder) {
+            if (item.isFile())
+                continue;
+
+            String folderName = item.getName();
+            if (folderName.equals(name))
+                return false;
+        }
+        return true;
+    }
+
+
+
     @SneakyThrows
     private void createBucketIfNotExist(String bucket) {
 
@@ -157,11 +171,9 @@ public class FileService {
 
 
     public void deleteContent(String path, String name, boolean isFile) {
-
         if (isFile) {
             deleteFile(path, name);
         } else deleteFolder(path, name);
-
     }
 
     @SneakyThrows
@@ -195,6 +207,7 @@ public class FileService {
             Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, userRootPath, true);
 
             for (Result<Item> result : results) {
+
                 Item item = result.get();
                 String objectName = item.objectName();
                 String fileName = Paths.get(objectName).getFileName().toString();

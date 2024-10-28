@@ -38,7 +38,8 @@ public class UserPageController {
     @GetMapping("/")
     public String generateUserPage(HttpSession session, Model model,
                                    @RequestParam(required = false) String path,
-                                   @RequestParam(required = false) String query) throws Exception {
+                                   @RequestParam(required = false) String query,
+                                   @RequestParam(required = false) String error) throws Exception {
 
         String username = (String) session.getAttribute("username");
         String userRootPath = pathUtil.getUserRootPath(session);
@@ -62,6 +63,7 @@ public class UserPageController {
         model.addAttribute("content", pageContent);
         model.addAttribute("path", publicPath);
         model.addAttribute("query", query != null ? query : "");
+        model.addAttribute("error", error != null ? error : "");
         return "user/user-claud";
     }
 
@@ -75,9 +77,6 @@ public class UserPageController {
 
         return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
     }
-
-
-
 
 
 }

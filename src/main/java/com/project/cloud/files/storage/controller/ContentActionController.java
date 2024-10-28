@@ -22,15 +22,17 @@ public class ContentActionController {
     private final FileService fileService;
     private final PathUtil pathUtil;
 
-
-    // TODO: Check folder name uniqueness in parent path
     @PostMapping("/create-folder")
     public String createFolder(@RequestParam String path,
-                               @RequestParam String name, HttpSession session) {
+                               @RequestParam String name, HttpSession session) throws Exception {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
+        if (!fileService.isFolderNameUnique(innerPath, name)) {
+            return "redirect:/?error=folder-name";
+        }
+
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
         if (publicPath.endsWith("/")) {
             publicPath = publicPath.substring(0, path.length() - 1);
         }
@@ -39,7 +41,6 @@ public class ContentActionController {
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
-
 
     @PostMapping("/upload-content")
     public String uploadContent(@RequestParam("data") MultipartFile[] data,
@@ -70,13 +71,10 @@ public class ContentActionController {
         if (isFile) {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\";");
             response.setContentType("application/octet-stream");
-
         } else {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + ".zip" + "\"");
             response.setContentType("application/zip");
-
         }
-        response.setCharacterEncoding("UTF-8");
         try (InputStream inputStream = fileService.downloadContent(contentPath, isFile);
              OutputStream outputStream = response.getOutputStream()) {
 
@@ -112,8 +110,6 @@ public class ContentActionController {
         return String.format("redirect:/?path=%s", destinationPath);
     }
 
-
-    // TODO: Implement daily automatic cleanup of expired files in trash
     @PostMapping("/delete-content")
     public String deleteContent(@RequestParam String path,
                                 @RequestParam String name,
@@ -132,16 +128,6 @@ public class ContentActionController {
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }
