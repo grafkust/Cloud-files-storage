@@ -24,12 +24,12 @@ public class UserPageController {
     public String createMainDirectories(HttpSession session) {
 
         String userRootPath = pathUtil.getUserRootPath(session);
-        String trashPath = userRootPath + "/Trash/";
+        String trashPath = userRootPath + "/Trash";
 
-        if (!fileService.isDirectoryExists(trashPath))
+        if (fileService.directoryDoesNotExist(trashPath))
             fileService.createFolder(trashPath);
 
-        if (!fileService.isDirectoryExists(userRootPath))
+        if (fileService.directoryDoesNotExist(userRootPath))
             fileService.createFolder(userRootPath);
 
         return "redirect:/";
@@ -47,13 +47,13 @@ public class UserPageController {
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
-        if (!fileService.isDirectoryExists(innerPath)) {
+        if (!innerPath.contains("Trash") && fileService.directoryDoesNotExist(innerPath)) {
             return "redirect:/";
         }
 
         List<ContentDto> pageContent;
 
-        if (query != null) {
+        if (query != null && !query.isEmpty()) {
             pageContent = fileService.searchFiles(userRootPath, query);
         } else {
             pageContent = fileService.getListFilesInFolder(innerPath);

@@ -32,5 +32,9 @@ public class PathUtil {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
+    public String correctPath(String path) {
+        return path.endsWith("/") ? path : path + "/";
+    }
+
 
 }

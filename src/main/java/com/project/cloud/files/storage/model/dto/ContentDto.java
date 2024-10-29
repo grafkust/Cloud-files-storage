@@ -22,9 +22,16 @@ public class ContentDto {
         this.isFile = isFile;
     }
 
+
+
     public ContentDto(String name, String iconPath, String path) {
         this.name = name;
         this.iconPath = iconPath;
         this.path = path;
     }
+
+
+
+
+
 }

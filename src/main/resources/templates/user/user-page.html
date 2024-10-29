@@ -122,7 +122,8 @@
 
                         <button onclick="openModal(this)" class="action-btn"
                                 th:data-file-name="${file.name}"
-                                th:data-is-file="${file.isFile}">
+                                th:data-is-file="${file.isFile}"
+                                th:data-file-path="${file.path}">
                             <img src="/icon/move.png" alt="Move">
                         </button>
 
@@ -148,7 +149,7 @@
     <div class="modal-content">
 
         <div class="modal-header">
-            <h3>Выберите папку назначения</h3>
+            <h3>Выберите папку назначения для <span id="fileName"></span></h3>
             <span class="close" onclick="closeModal()">&times;</span>
         </div>
 
@@ -181,8 +182,8 @@
 <script>
     function redirectToFolder(element) {
         const currentPath = element.getAttribute('current-path');
-        const fileName = element.getAttribute('file-name');
         const filePath = element.getAttribute('file-path');
+        const fileName = element.getAttribute('file-name');
         const isFile = fileName.includes('.') && fileName.split('.').pop().length <= 4;
 
         if (isFile && !filePath) return;
@@ -201,30 +202,34 @@
             } else
                 path = filePath.substring(filePath.indexOf('/') + 1);
         }
+        path = path.endsWith('/') ? path.slice(0, -1) : path;
         location.href = `/?path=${path}`;
     }
 
     function openModal(button) {
         const fileName = button.getAttribute('data-file-name');
         const isFile = button.getAttribute('data-is-file');
-
+        const filePath = button.getAttribute('data-file-path');
         const modal = document.getElementById("moveModal");
         modal.style.display = "block";
 
         document.querySelector('#moveForm input[name="name"]').value = fileName;
         document.querySelector('#moveForm input[name="isFile"]').value = isFile;
+        document.getElementById('fileName').textContent = fileName;
 
-        loadDirectories();
+        loadDirectories('', fileName, filePath);
     }
 
     function closeModal() {
         document.getElementById("moveModal").style.display = "none";
     }
 
-    function loadDirectories(path) {
+    function loadDirectories(path, fileName, filePath) {
         path = (path) ? path : '';
 
-        fetch('/get-directories?path=' + encodeURIComponent(path))
+        fetch('/get-directories?path=' + encodeURIComponent(path)
+            + '&name=' + encodeURIComponent(fileName)
+            + '&filePath=' + encodeURIComponent(filePath))
             .then(response => response.text())
             .then(html => {
                 document.querySelector('.directory-list').innerHTML = html;
@@ -242,14 +247,14 @@
 
         folderItem.classList.add('selected');
 
-        const selectedPath = folderItem.querySelector('.folder-path').value;
-
-        document.querySelector('#moveForm input[name="destinationPath"]').value = selectedPath;
+        document.querySelector('#moveForm input[name="destinationPath"]')
+            .value = folderItem.querySelector('.folder-path').value;
     }
 
     function navigateToFolder(folder) {
+        const name = folder.getAttribute('name');
         const newPath = folder.querySelector('.folder-path').value;
-        loadDirectories(newPath);
+        loadDirectories(newPath, name);
     }
 
 

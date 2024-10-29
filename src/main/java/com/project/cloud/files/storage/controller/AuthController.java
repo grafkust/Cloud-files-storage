@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RequestMapping("/auth")
 @Controller
 @RequiredArgsConstructor
@@ -58,8 +57,6 @@ public class AuthController {
         mailService.sendEmail(user);
         return "redirect:/auth/login?reg=success";
     }
-
-
 
 
 }

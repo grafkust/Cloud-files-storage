@@ -3,7 +3,9 @@
 <body>
 
     <div th:each="dir : ${directories}" class="folder-item"
-         onclick="selectDirectory(this)" ondblclick="navigateToFolder(this)">
+         th:name="${name}"
+         onclick="selectDirectory(this)"
+         ondblclick="navigateToFolder(this)">
 
         <img alt="folder-icon" th:src="${dir.iconPath}" class="folder-icon">
         <div class="folder-info">

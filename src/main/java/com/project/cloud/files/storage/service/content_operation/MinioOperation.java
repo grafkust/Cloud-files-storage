@@ -1,18 +1,27 @@
-package com.project.cloud.files.storage.service;
+package com.project.cloud.files.storage.service.content_operation;
 
 import io.minio.*;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
 public class MinioOperation {
 
     private final MinioClient minioClient;
+
+    @Value("${application.date-pattern}")
+    private String DATE_TIME_FORMAT_PATTERN;
+
 
     @SneakyThrows
     public void remove(String mainBucket, String path) {
@@ -61,17 +70,41 @@ public class MinioOperation {
                 .build());
     }
 
+    public boolean directoryDoesNotExist(String mainBucket, String path) {
+
+        Iterable<Result<Item>> results = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(mainBucket)
+                        .prefix(path)
+                        .maxKeys(1)
+                        .build()
+        );
+        return !results.iterator().hasNext();
+    }
+
+
     @SneakyThrows
-    public void makeBucket(String bucket) {
-        minioClient.makeBucket(MakeBucketArgs.builder()
-                .bucket(bucket)
+    public void save(String mainBucket, InputStream inputStream, String fileName) {
+        minioClient.putObject(PutObjectArgs.builder()
+                .bucket(mainBucket)
+                .object(fileName)
+                .stream(inputStream, inputStream.available(), -1)
                 .build());
     }
 
+    public String getLastModifiedDate(String mainBucket, String objectName) {
+        StatObjectResponse itemStat = getStatObject(mainBucket, objectName);
+        ZonedDateTime lastModified = itemStat.lastModified().withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
+        return lastModified.format(formatter);
+    }
+
     @SneakyThrows
-    public boolean isBucketExists(String bucket) {
-        return minioClient.bucketExists(BucketExistsArgs.builder()
-                .bucket(bucket)
+    public void createFolder(String mainBucket, String path) {
+        minioClient.putObject(PutObjectArgs.builder()
+                .bucket(mainBucket)
+                .object(path)
+                .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
                 .build());
     }
 

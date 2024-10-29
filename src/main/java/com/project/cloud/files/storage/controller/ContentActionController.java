@@ -47,14 +47,14 @@ public class ContentActionController {
 
     @PostMapping("/upload-content")
     public String uploadContent(@RequestParam("data") MultipartFile[] data,
-                                @RequestParam String path, HttpSession session) throws IOException {
+                                @RequestParam String path, HttpSession session) throws Exception {
 
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
         for (MultipartFile file : data) {
-            fileService.upload(file, innerPath);
+            fileService.uploadContent(file, innerPath);
         }
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
@@ -114,14 +114,22 @@ public class ContentActionController {
         return String.format("redirect:/?path=%s", publicPath);
     }
 
+    //TODO: Adjust the list of suggested folders to move
     @GetMapping("/get-directories")
-    public String getDirectories(@RequestParam String path, Model model, HttpSession session) {
+    public String getDirectories(@RequestParam String path,
+                                 @RequestParam String name,
+                                 @RequestParam String filePath,
+                                 Model model, HttpSession session) {
+        if (filePath.endsWith("/"))
+            filePath = filePath.substring(0, filePath.length() - 1);
 
+        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
         String userRootPath = pathUtil.getUserRootPath(session);
         path = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        List<ContentDto> folders = fileService.getListDirectories(innerPath);
+        List<ContentDto> folders = fileService.getListDirectories(innerPath, name, filePath);
         model.addAttribute("directories", folders);
+        model.addAttribute("name", name);
 
         return "fragments/directory-list";
     }
