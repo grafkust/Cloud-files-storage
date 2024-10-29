@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>grafClaude</title>
-    <link rel="stylesheet" href="/user/claud.css">
+    <link rel="stylesheet" href="/user/user-page.css">
+    <link rel="stylesheet" href="/user/move-modal.css">
 </head>
+
+
 <body>
 <header>
     <div class="search-container">
@@ -116,14 +119,13 @@
                             </button>
                         </form>
 
-                        <form action="/move-content" method="get">
-                            <input type="hidden" name="path" th:value="${path}">
-                            <input type="hidden" name="name" th:value="${file.name}">
-                            <input type="hidden" name="isFile" th:value="${file.isFile}">
-                            <button type="submit" class="action-btn">
-                                <img src="/icon/move.png" alt="Move">
-                            </button>
-                        </form>
+
+                        <button onclick="openModal(this)" class="action-btn"
+                                th:data-file-name="${file.name}"
+                                th:data-is-file="${file.isFile}">
+                            <img src="/icon/move.png" alt="Move">
+                        </button>
+
 
                         <form action="/delete-content" method="post">
                             <input type="hidden" name="path" th:value="${path}">
@@ -141,6 +143,35 @@
 
     </section>
 </main>
+
+<div id="moveModal" class="modal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h3>Выберите папку назначения</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+
+        <div class="modal-body">
+            <div class="directory-list">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" onclick="closeModal()">Отмена</button>
+
+            <form id="moveForm" action="/move-content" method="post">
+                <input type="hidden" name="path" th:value="${path}">
+                <input type="hidden" name="name" value="">
+                <input type="hidden" name="destinationPath" value="">
+                <input type="hidden" name="isFile" value="">
+                <button type="submit" class="move-btn">Переместить</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 
 <footer>
     <a href="https://github.com/grafkust/Cloud-files-storage" class="github-link">GitHub Repository</a>
@@ -167,13 +198,64 @@
                     location.href = `/`;
                 else
                     path = filePath.substring(filePath.indexOf('/') + 1, filePath.lastIndexOf('/'));
-            }
-            else
+            } else
                 path = filePath.substring(filePath.indexOf('/') + 1);
         }
         location.href = `/?path=${path}`;
     }
+
+    function openModal(button) {
+        const fileName = button.getAttribute('data-file-name');
+        const isFile = button.getAttribute('data-is-file');
+
+        const modal = document.getElementById("moveModal");
+        modal.style.display = "block";
+
+        document.querySelector('#moveForm input[name="name"]').value = fileName;
+        document.querySelector('#moveForm input[name="isFile"]').value = isFile;
+
+        loadDirectories();
+    }
+
+    function closeModal() {
+        document.getElementById("moveModal").style.display = "none";
+    }
+
+    function loadDirectories(path) {
+        path = (path) ? path : '';
+
+        fetch('/get-directories?path=' + encodeURIComponent(path))
+            .then(response => response.text())
+            .then(html => {
+                document.querySelector('.directory-list').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading directories:', error);
+            });
+    }
+
+    function selectDirectory(folderItem) {
+
+        document.querySelectorAll('.folder-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+
+        folderItem.classList.add('selected');
+
+        const selectedPath = folderItem.querySelector('.folder-path').value;
+
+        document.querySelector('#moveForm input[name="destinationPath"]').value = selectedPath;
+    }
+
+    function navigateToFolder(folder) {
+        const newPath = folder.querySelector('.folder-path').value;
+        loadDirectories(newPath);
+    }
+
+
 </script>
 
 </body>
 </html>
+
+

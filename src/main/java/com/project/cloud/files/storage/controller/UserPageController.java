@@ -64,7 +64,7 @@ public class UserPageController {
         model.addAttribute("path", publicPath);
         model.addAttribute("query", query != null ? query : "");
         model.addAttribute("error", error != null ? error : "");
-        return "user/user-claud";
+        return "user/user-page";
     }
 
     @GetMapping("/back")

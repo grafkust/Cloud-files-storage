@@ -1,11 +1,13 @@
 package com.project.cloud.files.storage.controller;
 
+import com.project.cloud.files.storage.model.dto.ContentDto;
 import com.project.cloud.files.storage.service.FileService;
 import com.project.cloud.files.storage.util.PathUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -89,7 +92,6 @@ public class ContentActionController {
         }
     }
 
-    // TODO: Add ability to move files/folders between directories
     @PostMapping("/move-content")
     public String moveContent(@RequestParam String path,
                               @RequestParam String name,
@@ -99,15 +101,29 @@ public class ContentActionController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String oldPath = isFile ? innerPath + "/" + name : innerPath + "/" + name + "/";
+
         if (destinationPath.equals("Trash")) {
             destinationPath = userRootPath + "/Trash/";
             fileService.moveContent(oldPath, destinationPath, isFile);
             return String.format("redirect:/?path=%s", path);
         }
-
         fileService.moveContent(oldPath, destinationPath, isFile);
-        destinationPath = pathUtil.encodePath(destinationPath);
-        return String.format("redirect:/?path=%s", destinationPath);
+        destinationPath = destinationPath.substring(0, destinationPath.length() - 1);
+        String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath);
+        publicPath = pathUtil.encodePath(publicPath);
+        return String.format("redirect:/?path=%s", publicPath);
+    }
+
+    @GetMapping("/get-directories")
+    public String getDirectories(@RequestParam String path, Model model, HttpSession session) {
+
+        String userRootPath = pathUtil.getUserRootPath(session);
+        path = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
+        String innerPath = pathUtil.createInnerPath(path, userRootPath);
+        List<ContentDto> folders = fileService.getListDirectories(innerPath);
+        model.addAttribute("directories", folders);
+
+        return "fragments/directory-list";
     }
 
     @PostMapping("/delete-content")

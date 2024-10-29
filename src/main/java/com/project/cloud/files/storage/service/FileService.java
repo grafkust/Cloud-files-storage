@@ -118,7 +118,6 @@ public class FileService {
         inputStream.close();
     }
 
-
     @SneakyThrows
     public void createFolder(String path) {
 
@@ -144,8 +143,6 @@ public class FileService {
         return true;
     }
 
-
-
     @SneakyThrows
     private void createBucketIfNotExist(String bucket) {
 
@@ -168,7 +165,6 @@ public class FileService {
         String fileName = file.getOriginalFilename();
         return path + fileName;
     }
-
 
     public void deleteContent(String path, String name, boolean isFile) {
         if (isFile) {
@@ -394,6 +390,37 @@ public class FileService {
         LocalDateTime lastModifiedDate = LocalDateTime.parse(getLastModifiedDate(trashItemPath), formatter);
         return lastModifiedDate.isBefore(cleanupThreshold);
     }
+
+
+    @SneakyThrows
+    public List<ContentDto> getListDirectories(String path) {
+
+        String prefix = correctPath(path);
+
+        Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, prefix, false);
+
+        List<ContentDto> contentDto = new ArrayList<>();
+        for (Result<Item> result : results) {
+
+            Item item = result.get();
+            String objectName = item.objectName();
+            String folderName = Paths.get(objectName).getFileName().toString();
+
+            if (folderName.equals(path.substring(path.lastIndexOf("/") + 1)))
+                folderName = "Файлы";
+
+            if (!objectName.endsWith("/") || objectName.contains("Trash")) {
+                continue;
+            }
+
+            String iconPath = ContentIconUtil.getFileIcon(folderName);
+            if (!folderName.isEmpty())
+                contentDto.add(new ContentDto(folderName, iconPath, objectName));
+        }
+        return contentDto;
+    }
+
+
 }
 
 
