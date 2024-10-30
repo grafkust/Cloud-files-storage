@@ -18,9 +18,10 @@ public class MoveContentService {
 
     @SneakyThrows
     public void moveFile(String oldPath, String destinationPath) {
+        oldPath = oldPath.endsWith("/") ? oldPath.substring(oldPath.length() - 1) : oldPath;
 
         String fileName = oldPath.substring(oldPath.lastIndexOf("/") + 1);
-        String newPath = destinationPath + "/" + fileName;
+        String newPath = destinationPath + fileName;
 
         minioOperation.copy(MAIN_BUCKET, newPath, oldPath);
         minioOperation.remove(MAIN_BUCKET, oldPath);
@@ -31,7 +32,7 @@ public class MoveContentService {
 
         String folderName = oldPath.substring(oldPath.lastIndexOf("/", oldPath.length() - 2) + 1);
         String newFolderPath = destinationPath + folderName;
-        minioOperation.createFolder(MAIN_BUCKET, newFolderPath);
+        minioOperation.createDirectory(MAIN_BUCKET, newFolderPath);
 
         Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, oldPath, true);
 

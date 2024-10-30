@@ -36,5 +36,12 @@ public class PathUtil {
         return path.endsWith("/") ? path : path + "/";
     }
 
+    public String getContentRootPath(String objectName, String fileName) {
+        if (objectName.contains(fileName))
+            objectName = objectName.endsWith("/") ? objectName.substring(0, objectName.length() - 1 - fileName.length()) : objectName.substring(0, objectName.length() - fileName.length());
+
+        return objectName;
+    }
+
 
 }

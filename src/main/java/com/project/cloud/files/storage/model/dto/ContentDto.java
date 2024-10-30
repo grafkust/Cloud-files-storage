@@ -14,12 +14,21 @@ public class ContentDto {
     private String iconPath;
     private boolean isFile;
     private String path;
+    private boolean isSearchResult;
 
     public ContentDto(String name, String lastModified, String iconPath, boolean isFile) {
         this.name = name;
         this.lastModified = lastModified;
         this.iconPath = iconPath;
         this.isFile = isFile;
+    }
+
+    public ContentDto(String name, String lastModified, String iconPath, boolean isFile, String path) {
+        this.name = name;
+        this.lastModified = lastModified;
+        this.iconPath = iconPath;
+        this.isFile = isFile;
+        this.path = path;
     }
 
 

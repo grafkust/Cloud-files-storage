@@ -100,7 +100,7 @@ public class MinioOperation {
     }
 
     @SneakyThrows
-    public void createFolder(String mainBucket, String path) {
+    public void createDirectory(String mainBucket, String path) {
         minioClient.putObject(PutObjectArgs.builder()
                 .bucket(mainBucket)
                 .object(path)

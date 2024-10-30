@@ -115,7 +115,7 @@ public class GetContentService {
 
 
     @SneakyThrows
-    public List<ContentDto> getListDirectories(String path, String name, String filePath) {
+    public List<ContentDto> getListDirectories(String path, String name) {
 
         String prefix = pathUtil.correctPath(path);
 
@@ -131,11 +131,10 @@ public class GetContentService {
             boolean itemIsFile = !objectName.endsWith("/");
             boolean itemIsTrash = folderName.equals("Trash");
 
-            //TODO: не можем перемещать папку туда, где она находится
             boolean folderIsMovementItem = folderName.equals(name);
-            boolean itemIsFileDirectory = objectName.equals(filePath);
 
-            if (itemIsFile || itemIsTrash || folderIsMovementItem || itemIsFileDirectory) {
+
+            if (itemIsFile || itemIsTrash || folderIsMovementItem ) {
                 continue;
             }
 
@@ -182,7 +181,7 @@ public class GetContentService {
                 String path = objectName.endsWith("/") ? objectName.substring(0, objectName.length() - 1)
                         : objectName;
 
-                searchResults.add(new ContentDto(fileName, lastModifiedDate, iconPath, false, path));
+                searchResults.add(new ContentDto(fileName, lastModifiedDate, iconPath, isFile, path, true));
             }
         }
 

@@ -3,7 +3,8 @@
 <body>
 
     <div th:each="dir : ${directories}" class="folder-item"
-         th:name="${name}"
+         th:data-file-name="${name}"
+         th:data-file-path="${filePath}"
          onclick="selectDirectory(this)"
          ondblclick="navigateToFolder(this)">
 

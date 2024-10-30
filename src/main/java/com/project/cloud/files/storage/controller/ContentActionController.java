@@ -100,6 +100,11 @@ public class ContentActionController {
 
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
+
+        if ((innerPath + "/").equals(destinationPath)) {
+            return String.format("redirect:/?path=%s&error=move", path);
+        }
+
         String oldPath = isFile ? innerPath + "/" + name : innerPath + "/" + name + "/";
 
         if (destinationPath.equals("Trash")) {
@@ -114,21 +119,21 @@ public class ContentActionController {
         return String.format("redirect:/?path=%s", publicPath);
     }
 
-    //TODO: Adjust the list of suggested folders to move
     @GetMapping("/get-directories")
     public String getDirectories(@RequestParam String path,
                                  @RequestParam String name,
                                  @RequestParam String filePath,
                                  Model model, HttpSession session) {
-        if (filePath.endsWith("/"))
-            filePath = filePath.substring(0, filePath.length() - 1);
 
-        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+        filePath = pathUtil.getContentRootPath(filePath, name);
+
         String userRootPath = pathUtil.getUserRootPath(session);
         path = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        List<ContentDto> folders = fileService.getListDirectories(innerPath, name, filePath);
+        List<ContentDto> folders = fileService.getListDirectories(innerPath, name);
+
         model.addAttribute("directories", folders);
+        model.addAttribute("filePath", filePath);
         model.addAttribute("name", name);
 
         return "fragments/directory-list";
@@ -153,5 +158,5 @@ public class ContentActionController {
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 
-
 }
+

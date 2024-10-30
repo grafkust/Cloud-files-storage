@@ -33,29 +33,24 @@ public class FileService {
     @Value("${minio.bucket}")
     private String MAIN_BUCKET;
 
-
     public List<ContentDto> getListFilesInFolder(String path) throws Exception {
         return getContentService.getListFilesInFolder(path);
     }
 
-
     @SneakyThrows
-    public List<ContentDto> getListDirectories(String path, String name, String filePath) {
-        return getContentService.getListDirectories(path, name, filePath);
+    public List<ContentDto> getListDirectories(String path, String name) {
+        return getContentService.getListDirectories(path, name);
     }
-
 
     public List<ContentDto> searchFiles(String userRootPath, String searchName) throws Exception {
         return getContentService.searchFiles(userRootPath, searchName);
     }
 
-
     @SneakyThrows
     public void createFolder(String path) {
         path = pathUtil.correctPath(path);
-        minioOperation.createFolder(MAIN_BUCKET, path);
+        minioOperation.createDirectory(MAIN_BUCKET, path);
     }
-
 
     public void uploadContent(MultipartFile file, String path) throws Exception {
         loadContentService.upload(file, path);
@@ -66,7 +61,6 @@ public class FileService {
             deleteContentService.deleteFile(path, name);
         } else deleteContentService.deleteFolder(path, name);
     }
-
 
     @SneakyThrows
     public void moveContent(String oldPath, String destinationPath, boolean isFile) {
@@ -87,7 +81,6 @@ public class FileService {
         deleteContentService.removeExpiredTrashItems();
     }
 
-
     public boolean isFolderNameUnique(String path, String name) throws Exception {
         List<ContentDto> listFilesInFolder = getListFilesInFolder(path);
         for (ContentDto item : listFilesInFolder) {
@@ -100,7 +93,6 @@ public class FileService {
         }
         return true;
     }
-
 
     public boolean directoryDoesNotExist(String directoryPath) {
         directoryPath = pathUtil.correctPath(directoryPath);

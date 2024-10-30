@@ -94,6 +94,9 @@
                 th:with="searchResult='Вот что мне удалось найти по запросу: '"
                 th:text="${!query.isEmpty()} ? ${searchResult + query} : (${!path.isEmpty() || path.contains('/')} ? ${path} : 'Файлы')">
             </h2>
+
+            <p th:if="${error.equals('move')}" style="color: red">
+                Выбранный объект уже находится в указанной директории</p>
         </div>
 
         <div th:each="file : ${content}">
@@ -119,11 +122,12 @@
                             </button>
                         </form>
 
-
+                        <div th:if="${!file.isSearchResult()}">
+                        </div>
                         <button onclick="openModal(this)" class="action-btn"
                                 th:data-file-name="${file.name}"
-                                th:data-is-file="${file.isFile}"
-                                th:data-file-path="${file.path}">
+                                th:data-file-path="${file.path}"
+                                th:data-is-file="${file.isFile}">
                             <img src="/icon/move.png" alt="Move">
                         </button>
 
@@ -215,7 +219,6 @@
 
         document.querySelector('#moveForm input[name="name"]').value = fileName;
         document.querySelector('#moveForm input[name="isFile"]').value = isFile;
-        document.getElementById('fileName').textContent = fileName;
 
         loadDirectories('', fileName, filePath);
     }
@@ -224,11 +227,11 @@
         document.getElementById("moveModal").style.display = "none";
     }
 
-    function loadDirectories(path, fileName, filePath) {
+    function loadDirectories(path, name, filePath) {
         path = (path) ? path : '';
 
         fetch('/get-directories?path=' + encodeURIComponent(path)
-            + '&name=' + encodeURIComponent(fileName)
+            + '&name=' + encodeURIComponent(name)
             + '&filePath=' + encodeURIComponent(filePath))
             .then(response => response.text())
             .then(html => {
@@ -252,9 +255,11 @@
     }
 
     function navigateToFolder(folder) {
-        const name = folder.getAttribute('name');
         const newPath = folder.querySelector('.folder-path').value;
-        loadDirectories(newPath, name);
+        const fileName = folder.getAttribute('data-file-name');
+        const filePath = folder.getAttribute('data-file-path');
+
+        loadDirectories(newPath, fileName, filePath);
     }
 
 
