@@ -32,6 +32,9 @@
         <div class="sidebar-top">
 
             <form action="/upload-content" method="post" enctype="multipart/form-data">
+                <div th:if="${error == 'size'}" style="color: red;">
+                    Принимаются файлы до 10 Мб.
+                </div>
                 <label class="sidebar-btn">
                     <img src="/icon/upload-file.png" alt="Upload" class="btn-icon">
                     <input type="file" name="data"
@@ -40,9 +43,10 @@
                     <input type="hidden" name="path" th:value="${path}">
                     Загрузить файл
                 </label>
+
             </form>
 
-            <form action="/upload-content" method="post" enctype="multipart/form-data">
+            <form action="/upload-content" method="post" enctype="multipart/form-data" >
                 <label class="sidebar-btn">
                     <img src="/icon/upload-folder.png" alt="Upload" class="btn-icon">
                     <input type="file" name="data" webkitdirectory="" directory=""
@@ -51,6 +55,7 @@
                     <input type="hidden" name="path" th:value="${path}">
                     Загрузить папку
                 </label>
+
             </form>
 
             <form action="/create-folder" method="post">

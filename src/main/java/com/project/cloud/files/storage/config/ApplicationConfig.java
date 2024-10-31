@@ -18,7 +18,6 @@ public class ApplicationConfig {
     private final MinioProperties minioProperties;
     private final MailProperties mailProperties;
 
-
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
@@ -38,6 +37,5 @@ public class ApplicationConfig {
         mailSender.getJavaMailProperties();
         return mailSender;
     }
-
 
 }

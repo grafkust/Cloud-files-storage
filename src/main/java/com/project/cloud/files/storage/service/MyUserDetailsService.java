@@ -5,11 +5,11 @@ import com.project.cloud.files.storage.model.entity.user.User;
 import com.project.cloud.files.storage.model.entity.userDetails.MyUserDetails;
 import com.project.cloud.files.storage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,14 +24,13 @@ public class MyUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws InternalAuthenticationServiceException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new InternalAuthenticationServiceException("User with username '" + username + "' not found");
+            throw new UsernameNotFoundException ("User with username '" + username + "' not found");
         }
         return create(user.get());
-
     }
 
     private MyUserDetails create(User user) {

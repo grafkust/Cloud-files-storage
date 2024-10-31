@@ -39,8 +39,11 @@ public class SecurityConfig {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);
         return provider;
     }
+
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -68,10 +71,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(entryPoint)
                 )
                 .authorizeHttpRequests(configurer -> configurer
-                        .requestMatchers("/login", "/auth/registration").permitAll()
-                        .requestMatchers("/perform_login").permitAll()
-                        .requestMatchers("/static/**", "/auth/**",
-                                "/icon/**", "/test/**", "/prepare-main-directories/**").permitAll()
+                        .requestMatchers( "/auth/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .anyRequest().authenticated());
 

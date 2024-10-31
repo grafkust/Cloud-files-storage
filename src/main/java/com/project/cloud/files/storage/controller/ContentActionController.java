@@ -56,6 +56,7 @@ public class ContentActionController {
         for (MultipartFile file : data) {
             fileService.uploadContent(file, innerPath);
         }
+
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
 

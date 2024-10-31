@@ -1,11 +1,17 @@
 
 server:
+  tomcat:
+    max-swallow-size: -1
   servlet:
     session:
       timeout: 24h
   port: 8087
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
   mail:
     host: ${SPRING_MAIL_HOST}
@@ -21,12 +27,6 @@ spring:
           auth: true
           starttls:
             enable: true
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-
 
   cache:
     type: redis
@@ -45,7 +45,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    show-sql: true
     open-in-view: false
 
   liquibase:
