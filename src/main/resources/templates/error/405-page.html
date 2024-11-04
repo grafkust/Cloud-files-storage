@@ -5,49 +5,53 @@
     <title>405 - Method Not Allowed</title>
     <link rel="stylesheet" href="/error/405-style.css">
 </head>
-    <body>
-    <main class="main" role="main">
-        <div class="error-container">
-            <h1 class="error-code">405</h1>
-            <h2 class="error-title">Метод не разрешен</h2>
-            <p class="error-description">
-                Запрошенный метод не поддерживается для данного ресурса.<br>
-                Пожалуйста, проверьте правильность отправляемого запроса.
-            </p>
-            <div class="request-info">
-                <div class="request-info-section">
-                    <h3>Отправленный запрос:</h3>
-                    <span th:text="${requestMethod}" class="method-tag error">
-                            METHOD
-                        </span>
-                </div>
-                <div class="divider"></div>
-                <div class="request-info-section">
-                    <h3>Поддерживаемые методы:</h3>
-                    <ul class="methods-list">
-                        <li th:each="method : ${supportedMethods}">
-                                <span th:text="${method}" class="method-tag">
-                                    METHOD
-                                </span>
-                        </li>
-                        <li th:if="${supportedMethods == null}">
-                            <span class="method-tag">GET</span>
-                        </li>
-                        <li th:if="${supportedMethods == null}">
-                            <span class="method-tag">POST</span>
-                        </li>
-                    </ul>
-                </div>
+<body>
+<main class="main" role="main">
+    <div class="error-container">
+        <h1 class="error-code">405</h1>
+        <h2 class="error-title">Method Not Allowed</h2>
+        <p class="error-description">
+            Запрошенный метод не поддерживается для данного ресурса.<br>
+            Пожалуйста, проверьте правильность отправляемого запроса.
+        </p>
+        <div class="request-info">
+            <div class="request-info-section">
+                <h3>Отправленный запрос:</h3>
+                <ul class="methods-list">
+                    <li>
+                     <span th:text="${requestMethod}" class="method-tag error"></span>
+                    </li>
+                </ul>
+
             </div>
-            <div style="margin-top: 30px;">
-                <a href="/" class="button">Вернуться на главную</a>
+            <div class="divider"></div>
+            <div class="request-info-section">
+                <h3>Поддерживаемые методы:</h3>
+                <ul class="methods-list">
+                    <li th:each="method : ${supportedMethods}">
+                        <span th:text="${method}" class="method-tag"></span>
+                    </li>
+                    <li th:if="${supportedMethods == null}">
+                        <span class="method-tag"></span>
+                    </li>
+                    <li th:if="${supportedMethods == null}">
+                        <span class="method-tag"></span>
+                    </li>
+                    <li th:if="${supportedMethods == null}">
+                        <span class="method-tag"></span>
+                    </li>
+                </ul>
             </div>
         </div>
-    </main>
+        <div style="margin-top: 30px;">
+            <a href="/" class="button">Вернуться на главную</a>
+        </div>
+    </div>
+</main>
 
-    <footer class="footer">
-        © 2024 Все права защищены
-    </footer>
+<footer class="footer">
+    © 2024 Все права защищены
+</footer>
 
 </body>
 </html>

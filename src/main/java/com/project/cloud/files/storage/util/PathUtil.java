@@ -15,7 +15,8 @@ public class PathUtil {
     private final UserService userService;
 
     public String createPublicPath(String path, String userRootPath) {
-        return path.equals(userRootPath) ? "" : path.substring(userRootPath.length() + 1);
+        return path.equals(userRootPath) ? ""
+                : path.substring(userRootPath.length() + 1).replaceAll("/$", "");
     }
 
     public String createInnerPath(String path, String userRootPath) {
@@ -37,10 +38,9 @@ public class PathUtil {
     }
 
     public String getContentRootPath(String objectName, String fileName) {
-        if (objectName.contains(fileName))
-            objectName = objectName.endsWith("/") ? objectName.substring(0, objectName.length() - 1 - fileName.length()) : objectName.substring(0, objectName.length() - fileName.length());
-
-        return objectName;
+        return objectName.contains(fileName)
+                ? objectName.substring(0, objectName.lastIndexOf(fileName))
+                : objectName;
     }
 
 

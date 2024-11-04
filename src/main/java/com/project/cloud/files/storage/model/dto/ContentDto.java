@@ -16,21 +16,6 @@ public class ContentDto {
     private String path;
     private boolean isSearchResult;
 
-    public ContentDto(String name, String lastModified, String iconPath, boolean isFile) {
-        this.name = name;
-        this.lastModified = lastModified;
-        this.iconPath = iconPath;
-        this.isFile = isFile;
-    }
-
-    public ContentDto(String name, String lastModified, String iconPath, boolean isFile, String path) {
-        this.name = name;
-        this.lastModified = lastModified;
-        this.iconPath = iconPath;
-        this.isFile = isFile;
-        this.path = path;
-    }
-
 
 
     public ContentDto(String name, String iconPath, String path) {
@@ -38,9 +23,6 @@ public class ContentDto {
         this.iconPath = iconPath;
         this.path = path;
     }
-
-
-
 
 
 }

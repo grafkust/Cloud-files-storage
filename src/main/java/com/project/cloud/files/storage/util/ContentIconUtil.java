@@ -1,36 +1,42 @@
 package com.project.cloud.files.storage.util;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ContentIconUtil {
-    public static String getFileIcon(String fileName) {
-        if (fileName == null || fileName.isEmpty()) {
+
+    public String getContentIcon(String fileName, boolean isFile) {
+
+        if (fileName == null || fileName.isEmpty())
             return "/icon/file.png";
-        }
 
-        String lowerCaseFileName = fileName.toLowerCase();
-
-        if (lowerCaseFileName.endsWith(".pdf")) {
-            return "/icon/pdf.png";
-        } else if (lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".jpeg")) {
-            return "/icon/jpg.png";
-        } else if (lowerCaseFileName.endsWith(".png")) {
-            return "/icon/png.png";
-        } else if (lowerCaseFileName.endsWith(".doc") || lowerCaseFileName.endsWith(".docx")) {
-            return "/icon/word.png";
-        } else if (lowerCaseFileName.endsWith(".mp3")) {
-            return "/icon/mp3.png";
-        } else if (lowerCaseFileName.endsWith(".mp4")) {
-            return "/icon/mp4.png";
-        } else if (lowerCaseFileName.endsWith(".xlsx") || lowerCaseFileName.endsWith(".xls")) {
-            return "/icon/xl.png";
-        } else if (lowerCaseFileName.endsWith(".java")) {
-            return "/icon/java.png";
-        } else {
-            int lastDotIndex = lowerCaseFileName.lastIndexOf('.');
-            if (lastDotIndex == -1 || lastDotIndex == lowerCaseFileName.length() - 1) {
-                return "/icon/folder.png";
-            }
-            String extension = lowerCaseFileName.substring(lastDotIndex + 1);
-            return extension.length() <= 4 ? "/icon/file.png" : "/icon/folder.png";
-        }
+        return isFile ? getFileIcon(fileName) : getFolderIcon();
     }
+
+    private String getFileIcon(String fileName) {
+
+        if (fileName.endsWith(".pdf")) {
+            return "/icon/pdf.png";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return "/icon/jpg.png";
+        } else if (fileName.endsWith(".png")) {
+            return "/icon/png.png";
+        } else if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
+            return "/icon/word.png";
+        } else if (fileName.endsWith(".mp3")) {
+            return "/icon/mp3.png";
+        } else if (fileName.endsWith(".mp4")) {
+            return "/icon/mp4.png";
+        } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+            return "/icon/xl.png";
+        } else if (fileName.endsWith(".java")) {
+            return "/icon/java.png";
+
+        } else return "/icon/file.png";
+    }
+
+    private String getFolderIcon() {
+        return "/icon/folder.png";
+    }
+
 }

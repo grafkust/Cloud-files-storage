@@ -1,9 +1,9 @@
 package com.project.cloud.files.storage.service.content_operation;
 
+import com.project.cloud.files.storage.exception.StorageOperationException;
 import io.minio.*;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,12 +23,15 @@ public class MinioOperation {
     private String DATE_TIME_FORMAT_PATTERN;
 
 
-    @SneakyThrows
     public void remove(String mainBucket, String path) {
-        minioClient.removeObject(RemoveObjectArgs.builder()
-                .bucket(mainBucket)
-                .object(path)
-                .build());
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(mainBucket)
+                    .object(path)
+                    .build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to remove object from storage", e);
+        }
     }
 
     public Iterable<Result<Item>> getListOfObjects(String mainBucket, String path, boolean recursive) {
@@ -40,34 +43,44 @@ public class MinioOperation {
                         .build());
     }
 
-    @SneakyThrows
+
     public InputStream getObject(String mainBucket, String path) {
-        return minioClient.getObject(GetObjectArgs.builder()
-                .bucket(mainBucket)
-                .object(path)
-                .build());
+        try {
+            return minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(mainBucket)
+                    .object(path)
+                    .build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to get object from storage", e);
+        }
     }
 
-    @SneakyThrows
     public void copy(String mainBucket, String newPath, String oldPath) {
-        minioClient.copyObject(
-                CopyObjectArgs.builder()
-                        .bucket(mainBucket)
-                        .object(newPath)
-                        .source(
-                                CopySource.builder()
-                                        .bucket(mainBucket)
-                                        .object(oldPath)
-                                        .build()
-                        ).build());
+        try {
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(mainBucket)
+                            .object(newPath)
+                            .source(
+                                    CopySource.builder()
+                                            .bucket(mainBucket)
+                                            .object(oldPath)
+                                            .build()
+                            ).build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to copy object from storage", e);
+        }
     }
 
-    @SneakyThrows
     public StatObjectResponse getStatObject(String mainBucket, String path) {
-        return minioClient.statObject(StatObjectArgs.builder()
-                .bucket(mainBucket)
-                .object(path)
-                .build());
+        try {
+            return minioClient.statObject(StatObjectArgs.builder()
+                    .bucket(mainBucket)
+                    .object(path)
+                    .build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to get state of object object from storage", e);
+        }
     }
 
     public boolean directoryDoesNotExist(String mainBucket, String path) {
@@ -83,13 +96,16 @@ public class MinioOperation {
     }
 
 
-    @SneakyThrows
     public void save(String mainBucket, InputStream inputStream, String fileName) {
-        minioClient.putObject(PutObjectArgs.builder()
-                .bucket(mainBucket)
-                .object(fileName)
-                .stream(inputStream, inputStream.available(), -1)
-                .build());
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(mainBucket)
+                    .object(fileName)
+                    .stream(inputStream, inputStream.available(), -1)
+                    .build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to save object in storage", e);
+        }
     }
 
     public String getLastModifiedDate(String mainBucket, String objectName) {
@@ -99,13 +115,17 @@ public class MinioOperation {
         return lastModified.format(formatter);
     }
 
-    @SneakyThrows
+
     public void createDirectory(String mainBucket, String path) {
-        minioClient.putObject(PutObjectArgs.builder()
-                .bucket(mainBucket)
-                .object(path)
-                .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
-                .build());
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(mainBucket)
+                    .object(path)
+                    .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
+                    .build());
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to create new directory in storage", e);
+        }
     }
 
 

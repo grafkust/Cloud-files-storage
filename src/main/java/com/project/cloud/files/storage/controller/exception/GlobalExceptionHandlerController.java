@@ -1,11 +1,13 @@
 package com.project.cloud.files.storage.controller.exception;
 
+import com.project.cloud.files.storage.exception.EmailOperationException;
+import com.project.cloud.files.storage.exception.FileUploadException;
 import com.project.cloud.files.storage.exception.NotUniqueFieldException;
+import com.project.cloud.files.storage.exception.StorageOperationException;
 import com.project.cloud.files.storage.model.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -35,8 +37,7 @@ public class GlobalExceptionHandlerController {
                 request.getMethod(),
                 request.getRequestURL(),
                 e.getSupportedHttpMethods(),
-                e.getMessage(),
-                e);
+                e.getMessage());
 
         Set<HttpMethod> supportedMethods = e.getSupportedHttpMethods();
         if (supportedMethods != null) {
@@ -105,11 +106,26 @@ public class GlobalExceptionHandlerController {
     }
 
     @ExceptionHandler(FileUploadException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleUploadFileException( HttpServletRequest request, Exception e) {
-        logHttpRequestException("Unexpected upload file exception", request, e, true);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleFileUploadException(HttpServletRequest request, FileUploadException e) {
+        logHttpRequestException("File upload exception", request, e, true);
         return "error/500-page";
     }
+
+    @ExceptionHandler(StorageOperationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleStorageOperationException(StorageOperationException e) {
+        log.error(e.getMessage(), e);
+        return "error/500-page";
+    }
+
+    @ExceptionHandler(EmailOperationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleEmailOperationException(EmailOperationException e) {
+        log.error(e.getMessage(), e);
+        return "error/500-page";
+    }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

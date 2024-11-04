@@ -6,6 +6,7 @@ import com.project.cloud.files.storage.util.PathUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -30,55 +32,55 @@ public class ContentActionController {
                                @RequestParam String name, HttpSession session) throws Exception {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-
-        if (!fileService.isFolderNameUnique(innerPath, name)) {
-            return "redirect:/?error=folder-name";
-        }
-
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
-        if (publicPath.endsWith("/")) {
-            publicPath = publicPath.substring(0, path.length() - 1);
+        publicPath = pathUtil.encodePath(publicPath);
+
+        boolean folderNameNotUnique = fileService.folderNameNotUnique(innerPath, name);
+
+        if (folderNameNotUnique) {
+            return path.isEmpty() ? "redirect:/?error=folder-name" :
+                    String.format("redirect:/?path=%s&error=folder-name", publicPath);
         }
+
         String folderPath = String.format("%s/%s", innerPath, name);
         fileService.createFolder(folderPath);
-        publicPath = pathUtil.encodePath(publicPath);
+
+
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 
     @PostMapping("/upload-content")
     public String uploadContent(@RequestParam("data") MultipartFile[] data,
                                 @RequestParam String path, HttpSession session) throws Exception {
-
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
         for (MultipartFile file : data) {
             fileService.uploadContent(file, innerPath);
         }
 
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
-
     }
 
     @GetMapping("/download-content")
     public void downloadContent(@RequestParam String path,
                                 @RequestParam String name,
                                 @RequestParam boolean isFile,
-                                HttpServletResponse response, HttpSession session) {
+                                HttpServletResponse response, HttpSession session) throws FileUploadException {
 
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String contentPath = String.format("%s/%s", innerPath, name);
 
-        if (isFile) {
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\";");
-            response.setContentType("application/octet-stream");
-        } else {
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + ".zip" + "\"");
-            response.setContentType("application/zip");
-        }
+        name = isFile ? name : name + ".zip";
+        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
+        String contentType = isFile ? "octet-stream" : "zip";
+
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedName + "\";");
+        response.setContentType("application/" + contentType);
+
         try (InputStream inputStream = fileService.downloadContent(contentPath, isFile);
              OutputStream outputStream = response.getOutputStream()) {
 
@@ -88,8 +90,8 @@ public class ContentActionController {
                 outputStream.write(buffer, 0, bytesRead);
             }
             outputStream.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Error downloading folder: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new FileUploadException("Error downloading content", e);
         }
     }
 
@@ -98,23 +100,23 @@ public class ContentActionController {
                               @RequestParam String name,
                               @RequestParam String destinationPath,
                               @RequestParam boolean isFile, HttpSession session) {
-
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
-        if ((innerPath + "/").equals(destinationPath)) {
-            return String.format("redirect:/?path=%s&error=move", path);
+        boolean isMovingToSameFolder = (innerPath + "/").equals(destinationPath);
+        if (isMovingToSameFolder) {
+            return String.format("redirect:/?path=%s&error=move", pathUtil.encodePath(path));
         }
 
-        String oldPath = isFile ? innerPath + "/" + name : innerPath + "/" + name + "/";
+        String oldPath = innerPath + "/" + name;
 
         if (destinationPath.equals("Trash")) {
-            destinationPath = userRootPath + "/Trash/";
+            destinationPath = userRootPath + "/Trash";
             fileService.moveContent(oldPath, destinationPath, isFile);
-            return String.format("redirect:/?path=%s", path);
+            return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
         }
         fileService.moveContent(oldPath, destinationPath, isFile);
-        destinationPath = destinationPath.substring(0, destinationPath.length() - 1);
+
         String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath);
         publicPath = pathUtil.encodePath(publicPath);
         return String.format("redirect:/?path=%s", publicPath);
@@ -129,8 +131,9 @@ public class ContentActionController {
         filePath = pathUtil.getContentRootPath(filePath, name);
 
         String userRootPath = pathUtil.getUserRootPath(session);
-        path = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
-        String innerPath = pathUtil.createInnerPath(path, userRootPath);
+
+        String publicPath = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
+        String innerPath = pathUtil.createInnerPath(publicPath, userRootPath);
         List<ContentDto> folders = fileService.getListDirectories(innerPath, name);
 
         model.addAttribute("directories", folders);
@@ -145,16 +148,17 @@ public class ContentActionController {
                                 @RequestParam String name,
                                 @RequestParam boolean isFile,
                                 HttpSession session) {
-
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
-        if (!innerPath.contains("Trash")) {
-            moveContent(path, name, "Trash", isFile, session);
-        } else
+        boolean isInTrash = innerPath.contains("Trash");
+
+        if (isInTrash) {
             fileService.deleteContent(innerPath, name, isFile);
+        } else
+            moveContent(path, name, "Trash", isFile, session);
 
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
         publicPath = pathUtil.encodePath(publicPath);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }

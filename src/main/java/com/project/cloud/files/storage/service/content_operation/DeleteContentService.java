@@ -1,10 +1,10 @@
 package com.project.cloud.files.storage.service.content_operation;
 
+import com.project.cloud.files.storage.exception.StorageOperationException;
 import io.minio.Result;
 import io.minio.errors.MinioException;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +28,13 @@ public class DeleteContentService {
     @Value("${application.trash.retention-days}")
     private Integer TRASH_RETENTION_DAYS;
 
-    @SneakyThrows
+
     public void deleteFile(String path, String name) {
         String file = path + "/" + name;
         minioOperation.remove(MAIN_BUCKET, file);
     }
 
-    @SneakyThrows
+
     public void deleteFolder(String path, String name) {
         String folder = path + "/" + name + "/";
         try {
@@ -59,30 +59,38 @@ public class DeleteContentService {
         }
     }
 
-    @SneakyThrows
+
     private List<String> getUsersTrashDirectory(Iterable<Result<Item>> usersRootDirectories) {
         List<String> usersTrashDirectories = new ArrayList<>();
         for (Result<Item> rootDirectory : usersRootDirectories) {
-            Item item = rootDirectory.get();
-            String rootDirectoryPath = item.objectName();
-            String trashDirectoryPath = String.format("%sTrash/", rootDirectoryPath);
-            usersTrashDirectories.add(trashDirectoryPath);
+            try {
+                Item item = rootDirectory.get();
+                String rootDirectoryPath = item.objectName();
+                String trashDirectoryPath = String.format("%sTrash/", rootDirectoryPath);
+                usersTrashDirectories.add(trashDirectoryPath);
+            } catch (Exception e) {
+                throw new StorageOperationException("Failed to get user trash directory from storage", e);
+            }
         }
         return usersTrashDirectories;
     }
 
-    @SneakyThrows
+
     private void removeExpiredTrashItems(String trashDirectory) {
         Iterable<Result<Item>> trashContent = minioOperation.getListOfObjects(MAIN_BUCKET, trashDirectory, true);
         for (Result<Item> result : trashContent) {
-            Item item = result.get();
-            String trashItemPath = item.objectName();
+            try {
+                Item item = result.get();
+                String trashItemPath = item.objectName();
 
-            if (trashItemPath.equals(trashDirectory))
-                continue;
+                if (trashItemPath.equals(trashDirectory))
+                    continue;
 
-            if (isTrashItemExpired(trashItemPath))
-                minioOperation.remove(MAIN_BUCKET, trashItemPath);
+                if (isTrashItemExpired(trashItemPath))
+                    minioOperation.remove(MAIN_BUCKET, trashItemPath);
+            } catch (Exception e) {
+                throw new StorageOperationException("Failed to remove expired object from storage", e);
+            }
         }
     }
 

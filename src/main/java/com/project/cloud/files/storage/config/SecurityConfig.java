@@ -43,8 +43,6 @@ public class SecurityConfig {
         return provider;
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -71,7 +69,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(entryPoint)
                 )
                 .authorizeHttpRequests(configurer -> configurer
-                        .requestMatchers( "/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error/**.css").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .anyRequest().authenticated());
 

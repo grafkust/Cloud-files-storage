@@ -20,7 +20,7 @@
             <input type="password" id="password" name="password" placeholder="Enter your password" required>
             <div class="error-message" th:if = "${illegalArgument.contains('password')}" th:text = "${illegalArgument}"></div>
         </div>
-        <div th:if="${reg != null && reg.equals('success')}">
+        <div th:if="${reg != null && reg == 'success'}">
             <p style="color: forestgreen">Регистрация прошла успешно. Пожалуйста, проверьте Email указанный при регистрации.</p>
         </div>
         <button type="submit" class="btn">Authorization</button>

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-
 @Controller
 @RequiredArgsConstructor
 public class UserPageController {
@@ -26,11 +25,11 @@ public class UserPageController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String trashPath = userRootPath + "/Trash";
 
-        if (fileService.directoryDoesNotExist(trashPath))
-            fileService.createFolder(trashPath);
-
         if (fileService.directoryDoesNotExist(userRootPath))
             fileService.createFolder(userRootPath);
+
+        if (fileService.directoryDoesNotExist(trashPath))
+            fileService.createFolder(trashPath);
 
         return "redirect:/";
     }
@@ -43,21 +42,16 @@ public class UserPageController {
 
         String username = (String) session.getAttribute("username");
         String userRootPath = pathUtil.getUserRootPath(session);
-
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
-        if (!innerPath.contains("Trash") && fileService.directoryDoesNotExist(innerPath)) {
+        boolean pathNotExist = fileService.directoryDoesNotExist(innerPath);
+
+        if (pathNotExist)
             return "redirect:/";
-        }
 
-        List<ContentDto> pageContent;
+        List<ContentDto> pageContent = fileService.getPageContent(userRootPath, innerPath, query);
 
-        if (query != null && !query.isEmpty()) {
-            pageContent = fileService.searchFiles(userRootPath, query);
-        } else {
-            pageContent = fileService.getListFilesInFolder(innerPath);
-        }
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 
         model.addAttribute("username", username);
         model.addAttribute("content", pageContent);
@@ -70,7 +64,9 @@ public class UserPageController {
     @GetMapping("/back")
     public String back(@RequestParam String path) {
 
-        if (!path.contains("/"))
+        boolean isDirectoryChildOfRoot = !path.contains("/");
+
+        if (isDirectoryChildOfRoot)
             return "redirect:/";
 
         path = path.substring(0, path.lastIndexOf('/'));

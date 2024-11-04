@@ -29,9 +29,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                     exception.getMessage(),
                     exception);
 
-            response.sendRedirect("/error/500-page");
-        }
-        else if (exception instanceof UsernameNotFoundException) {
+            response.sendRedirect("/");
+        } else if (exception instanceof UsernameNotFoundException) {
             request.setAttribute("illegalArgument", exception.getMessage());
         } else if (exception instanceof BadCredentialsException) {
             String username = request.getParameter("username");

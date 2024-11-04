@@ -1,9 +1,9 @@
 package com.project.cloud.files.storage.service.content_operation;
 
+import com.project.cloud.files.storage.exception.StorageOperationException;
 import io.minio.Result;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,6 @@ public class MoveContentService {
     @Value("${minio.bucket}")
     private String MAIN_BUCKET;
 
-    @SneakyThrows
     public void moveFile(String oldPath, String destinationPath) {
         oldPath = oldPath.endsWith("/") ? oldPath.substring(oldPath.length() - 1) : oldPath;
 
@@ -27,7 +26,6 @@ public class MoveContentService {
         minioOperation.remove(MAIN_BUCKET, oldPath);
     }
 
-    @SneakyThrows
     public void moveFolder(String oldPath, String destinationPath) {
 
         String folderName = oldPath.substring(oldPath.lastIndexOf("/", oldPath.length() - 2) + 1);
@@ -37,13 +35,17 @@ public class MoveContentService {
         Iterable<Result<Item>> results = minioOperation.getListOfObjects(MAIN_BUCKET, oldPath, true);
 
         for (Result<Item> result : results) {
-            Item item = result.get();
-            String oldItemPath = item.objectName();
-            String relativePath = oldItemPath.substring(oldPath.length());
-            String newItemPath = newFolderPath + relativePath;
+            try {
+                Item item = result.get();
+                String oldItemPath = item.objectName();
+                String relativePath = oldItemPath.substring(oldPath.length());
+                String newItemPath = newFolderPath + relativePath;
 
-            minioOperation.copy(MAIN_BUCKET, newItemPath, oldItemPath);
-            minioOperation.remove(MAIN_BUCKET, oldItemPath);
+                minioOperation.copy(MAIN_BUCKET, newItemPath, oldItemPath);
+                minioOperation.remove(MAIN_BUCKET, oldItemPath);
+            } catch (Exception e) {
+                throw new StorageOperationException("Failed to move folder in storage", e);
+            }
         }
         minioOperation.remove(MAIN_BUCKET, oldPath);
     }
