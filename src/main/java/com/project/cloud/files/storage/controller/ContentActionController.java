@@ -29,7 +29,7 @@ public class ContentActionController {
 
     @PostMapping("/create-folder")
     public String createFolder(@RequestParam String path,
-                               @RequestParam String name, HttpSession session) throws Exception {
+                               @RequestParam String name, HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);

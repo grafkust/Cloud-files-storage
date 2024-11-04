@@ -38,7 +38,7 @@ public class UserPageController {
     public String generateUserPage(HttpSession session, Model model,
                                    @RequestParam(required = false) String path,
                                    @RequestParam(required = false) String query,
-                                   @RequestParam(required = false) String error) throws Exception {
+                                   @RequestParam(required = false) String error) {
 
         String username = (String) session.getAttribute("username");
         String userRootPath = pathUtil.getUserRootPath(session);
