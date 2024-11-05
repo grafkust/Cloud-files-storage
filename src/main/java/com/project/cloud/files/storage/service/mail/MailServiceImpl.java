@@ -1,4 +1,4 @@
-package com.project.cloud.files.storage.service;
+package com.project.cloud.files.storage.service.mail;
 
 import com.project.cloud.files.storage.exception.EmailOperationException;
 import com.project.cloud.files.storage.model.entity.user.User;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class MailService {
+public class MailServiceImpl implements MailService {
 
     private final Configuration configuration;
     private final JavaMailSender mailSender;
@@ -24,7 +24,7 @@ public class MailService {
     @Value("${application.url}")
     private String applicationUrl;
 
-
+    @Override
     public void sendEmail(User user) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();

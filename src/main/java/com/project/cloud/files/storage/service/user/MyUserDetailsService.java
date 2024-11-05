@@ -1,8 +1,8 @@
-package com.project.cloud.files.storage.service;
+package com.project.cloud.files.storage.service.user;
 
 import com.project.cloud.files.storage.model.entity.user.Role;
 import com.project.cloud.files.storage.model.entity.user.User;
-import com.project.cloud.files.storage.model.entity.userDetails.MyUserDetails;
+import com.project.cloud.files.storage.model.entity.user.userDetails.MyUserDetails;
 import com.project.cloud.files.storage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

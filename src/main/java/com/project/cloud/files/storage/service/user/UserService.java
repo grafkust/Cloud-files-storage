@@ -1,11 +1,11 @@
-package com.project.cloud.files.storage.service;
+package com.project.cloud.files.storage.service.user;
 
 import com.project.cloud.files.storage.exception.NotUniqueFieldException;
-import com.project.cloud.files.storage.mapper.UserMapper;
 import com.project.cloud.files.storage.model.dto.UserDto;
 import com.project.cloud.files.storage.model.entity.user.Role;
 import com.project.cloud.files.storage.model.entity.user.User;
 import com.project.cloud.files.storage.repository.UserRepository;
+import com.project.cloud.files.storage.util.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;

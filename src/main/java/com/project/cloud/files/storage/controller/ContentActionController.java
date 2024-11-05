@@ -1,8 +1,8 @@
 package com.project.cloud.files.storage.controller;
 
 import com.project.cloud.files.storage.model.dto.ContentDto;
-import com.project.cloud.files.storage.service.FileService;
-import com.project.cloud.files.storage.util.PathUtil;
+import com.project.cloud.files.storage.service.file.FileOperationService;
+import com.project.cloud.files.storage.util.validator.PathUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ContentActionController {
 
-    private final FileService fileService;
+    private final FileOperationService fileOperationService;
     private final PathUtil pathUtil;
 
     @PostMapping("/create-folder")
@@ -35,7 +35,7 @@ public class ContentActionController {
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
         publicPath = pathUtil.encodePath(publicPath);
 
-        boolean folderNameNotUnique = fileService.folderNameNotUnique(innerPath, name);
+        boolean folderNameNotUnique = fileOperationService.folderNameNotUnique(innerPath, name);
 
         if (folderNameNotUnique) {
             return path.isEmpty() ? "redirect:/?error=folder-name" :
@@ -43,7 +43,7 @@ public class ContentActionController {
         }
 
         String folderPath = String.format("%s/%s", innerPath, name);
-        fileService.createFolder(folderPath);
+        fileOperationService.createDirectory(folderPath);
 
 
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
@@ -51,12 +51,12 @@ public class ContentActionController {
 
     @PostMapping("/upload-content")
     public String uploadContent(@RequestParam("data") MultipartFile[] data,
-                                @RequestParam String path, HttpSession session) throws Exception {
+                                @RequestParam String path, HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
         for (MultipartFile file : data) {
-            fileService.uploadContent(file, innerPath);
+            fileOperationService.upload(file, innerPath);
         }
 
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
@@ -81,7 +81,7 @@ public class ContentActionController {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedName + "\";");
         response.setContentType("application/" + contentType);
 
-        try (InputStream inputStream = fileService.downloadContent(contentPath, isFile);
+        try (InputStream inputStream = fileOperationService.download(contentPath, isFile);
              OutputStream outputStream = response.getOutputStream()) {
 
             byte[] buffer = new byte[8192];
@@ -112,10 +112,10 @@ public class ContentActionController {
 
         if (destinationPath.equals("Trash")) {
             destinationPath = userRootPath + "/Trash";
-            fileService.moveContent(oldPath, destinationPath, isFile);
+            fileOperationService.moveContent(oldPath, destinationPath, isFile);
             return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
         }
-        fileService.moveContent(oldPath, destinationPath, isFile);
+        fileOperationService.moveContent(oldPath, destinationPath, isFile);
 
         String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath);
         publicPath = pathUtil.encodePath(publicPath);
@@ -134,7 +134,7 @@ public class ContentActionController {
 
         String publicPath = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
         String innerPath = pathUtil.createInnerPath(publicPath, userRootPath);
-        List<ContentDto> folders = fileService.getListDirectories(innerPath, name);
+        List<ContentDto> folders = fileOperationService.listDirectory(innerPath, name);
 
         model.addAttribute("directories", folders);
         model.addAttribute("filePath", filePath);
@@ -154,7 +154,7 @@ public class ContentActionController {
         boolean isInTrash = innerPath.contains("Trash");
 
         if (isInTrash) {
-            fileService.deleteContent(innerPath, name, isFile);
+            fileOperationService.delete(innerPath, name, isFile);
         } else
             moveContent(path, name, "Trash", isFile, session);
 

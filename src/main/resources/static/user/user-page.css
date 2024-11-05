@@ -391,6 +391,18 @@ input[type="file"] {
     background-color: #888;
 }
 
+.error-message {
+    transition: opacity 0.5s ease-in-out;
+}
+
+.error-message.fade-out {
+    opacity: 0;
+}
+
+.error-message.hidden {
+    display: none;
+}
+
 
 
 

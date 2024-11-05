@@ -1,10 +1,10 @@
 package com.project.cloud.files.storage.controller;
 
-import com.project.cloud.files.storage.mapper.UserMapper;
 import com.project.cloud.files.storage.model.dto.UserDto;
 import com.project.cloud.files.storage.model.entity.user.User;
-import com.project.cloud.files.storage.service.MailService;
-import com.project.cloud.files.storage.service.UserService;
+import com.project.cloud.files.storage.service.mail.MailService;
+import com.project.cloud.files.storage.service.user.UserService;
+import com.project.cloud.files.storage.util.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

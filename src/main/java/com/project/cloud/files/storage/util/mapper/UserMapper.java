@@ -1,4 +1,4 @@
-package com.project.cloud.files.storage.mapper;
+package com.project.cloud.files.storage.util.mapper;
 
 import com.project.cloud.files.storage.model.dto.UserDto;
 import com.project.cloud.files.storage.model.entity.user.User;

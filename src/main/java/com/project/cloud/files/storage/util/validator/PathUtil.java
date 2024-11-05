@@ -1,9 +1,10 @@
-package com.project.cloud.files.storage.util;
+package com.project.cloud.files.storage.util.validator;
 
-import com.project.cloud.files.storage.service.UserService;
+import com.project.cloud.files.storage.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,11 @@ public class PathUtil {
         return objectName.contains(fileName)
                 ? objectName.substring(0, objectName.lastIndexOf(fileName))
                 : objectName;
+    }
+
+    public String createFullPath(MultipartFile file, String path) {
+        String fileName = file.getOriginalFilename();
+        return path + fileName;
     }
 
 

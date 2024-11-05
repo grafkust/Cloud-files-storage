@@ -1,4 +1,4 @@
-package com.project.cloud.files.storage.model.entity.userDetails;
+package com.project.cloud.files.storage.model.entity.user.userDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,9 +2,6 @@
 server:
   tomcat:
     max-swallow-size: -1
-  servlet:
-    session:
-      timeout: 24h
   port: 8087
 
 spring:

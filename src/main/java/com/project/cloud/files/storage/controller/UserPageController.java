@@ -1,8 +1,8 @@
 package com.project.cloud.files.storage.controller;
 
 import com.project.cloud.files.storage.model.dto.ContentDto;
-import com.project.cloud.files.storage.service.FileService;
-import com.project.cloud.files.storage.util.PathUtil;
+import com.project.cloud.files.storage.service.file.FileOperationService;
+import com.project.cloud.files.storage.util.validator.PathUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserPageController {
 
-    private final FileService fileService;
+    private final FileOperationService fileOperationService;
     private final PathUtil pathUtil;
 
     @GetMapping("/prepare-main-directories")
@@ -25,11 +25,11 @@ public class UserPageController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String trashPath = userRootPath + "/Trash";
 
-        if (fileService.directoryDoesNotExist(userRootPath))
-            fileService.createFolder(userRootPath);
+        if (fileOperationService.directoryDoesNotExist(userRootPath))
+            fileOperationService.createDirectory(userRootPath);
 
-        if (fileService.directoryDoesNotExist(trashPath))
-            fileService.createFolder(trashPath);
+        if (fileOperationService.directoryDoesNotExist(trashPath))
+            fileOperationService.createDirectory(trashPath);
 
         return "redirect:/";
     }
@@ -44,12 +44,16 @@ public class UserPageController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
-        boolean pathNotExist = fileService.directoryDoesNotExist(innerPath);
+        boolean pathNotExist = fileOperationService.directoryDoesNotExist(innerPath);
 
         if (pathNotExist)
             return "redirect:/";
 
-        List<ContentDto> pageContent = fileService.getPageContent(userRootPath, innerPath, query);
+        List<ContentDto> pageContent;
+
+        if (query == null || query.isEmpty()) {
+            pageContent = fileOperationService.getFilesInFolder(innerPath);
+        } else pageContent = fileOperationService.searchContent(userRootPath, query);
 
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
 

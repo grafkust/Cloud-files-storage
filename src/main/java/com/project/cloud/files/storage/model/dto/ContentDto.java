@@ -17,7 +17,6 @@ public class ContentDto {
     private boolean isSearchResult;
 
 
-
     public ContentDto(String name, String iconPath, String path) {
         this.name = name;
         this.iconPath = iconPath;

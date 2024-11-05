@@ -32,7 +32,7 @@
         <div class="sidebar-top">
 
             <form action="/upload-content" method="post" enctype="multipart/form-data">
-                <div th:if="${error == 'size'}" style="color: red;">
+                <div th:if="${error == 'size'}" style="color: red"  class="error-message">
                     Принимаются файлы до 10 Мб.
                 </div>
                 <label class="sidebar-btn">
@@ -99,8 +99,8 @@
                 th:text="${!query.isEmpty()} ? ${searchResult + query} : (${!path.isEmpty() || path.contains('/')} ? ${path} : 'Файлы')">
             </h2>
 
-            <div th:if="${error == 'folder-name'}" style="color: red">Папка с таким именем уже существует</div>
-            <div th:if="${error == 'move'}" style="color: red">Выбранный объект уже находится в указанной директории</div>
+            <div th:if="${error == 'folder-name'}" style="color: red"  class="error-message">Папка с таким именем уже существует</div>
+            <div th:if="${error == 'move'}" style="color: red"  class="error-message">Выбранный объект уже находится в указанной директории</div>
         </div>
 
         <div th:each="file : ${content}">
@@ -266,6 +266,20 @@
 
         loadDirectories(newPath, fileName, filePath);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            document.querySelectorAll('.error-message').forEach(function(element) {
+                element.classList.add('fade-out');
+            });
+        }, 2500);
+
+        setTimeout(function() {
+            document.querySelectorAll('.error-message').forEach(function(element) {
+                element.classList.add('hidden');
+            });
+        }, 3000);
+    });
 
 
 </script>

@@ -3,7 +3,7 @@ package com.project.cloud.files.storage.config;
 import com.project.cloud.files.storage.security.CustomAuthenticationEntryPoint;
 import com.project.cloud.files.storage.security.CustomAuthenticationFailureHandler;
 import com.project.cloud.files.storage.security.CustomAuthenticationSuccessHandler;
-import com.project.cloud.files.storage.service.MyUserDetailsService;
+import com.project.cloud.files.storage.service.user.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 
 @Configuration
 @EnableWebSecurity
-@EnableRedisHttpSession
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60 * 60 * 24)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -42,6 +42,7 @@ public class SecurityConfig {
         provider.setHideUserNotFoundExceptions(false);
         return provider;
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
