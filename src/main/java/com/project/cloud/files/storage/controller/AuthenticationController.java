@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @Controller
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthenticationController {
 
     private final UserMapper userMapper;
     private final UserService userService;
@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String loginError() {
+    public String handleLoginError() {
         return "auth/login";
     }
 
@@ -45,8 +45,8 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public String regUser(@Validated @ModelAttribute("userDto") UserDto userDto,
-                          BindingResult bindingResult, Model model) {
+    public String registerNewUser(@Validated @ModelAttribute("userDto") UserDto userDto,
+                                  BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("fieldNotUnique", "no exception");

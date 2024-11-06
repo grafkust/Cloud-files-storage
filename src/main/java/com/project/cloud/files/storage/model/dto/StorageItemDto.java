@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ContentDto {
+public class StorageItemDto {
 
     private String name;
     private String lastModified;
@@ -17,7 +17,7 @@ public class ContentDto {
     private boolean isSearchResult;
 
 
-    public ContentDto(String name, String iconPath, String path) {
+    public StorageItemDto(String name, String iconPath, String path) {
         this.name = name;
         this.iconPath = iconPath;
         this.path = path;

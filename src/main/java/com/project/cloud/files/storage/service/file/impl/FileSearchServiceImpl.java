@@ -1,10 +1,10 @@
 package com.project.cloud.files.storage.service.file.impl;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import com.project.cloud.files.storage.model.entity.storage.StorageItem;
 import com.project.cloud.files.storage.service.file.FileSearchService;
 import com.project.cloud.files.storage.service.storage.StorageService;
-import com.project.cloud.files.storage.util.hepler.ContentIconUtil;
+import com.project.cloud.files.storage.util.hepler.StorageItemIconManager;
 import com.project.cloud.files.storage.util.mapper.StorageItemMapper;
 import com.project.cloud.files.storage.util.validator.PathUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +20,12 @@ public class FileSearchServiceImpl implements FileSearchService {
 
     private final StorageService storageService;
     private final PathUtil pathUtil;
-    private final ContentIconUtil contentIconUtil;
+    private final StorageItemIconManager storageItemIconManager;
     private final StorageItemMapper storageItemMapper;
 
     @Override
-    public List<ContentDto> listDirectory(String path, String excludeName) {
-        String prefix = pathUtil.correctPath(path);
+    public List<StorageItemDto> listDirectory(String path, String excludeName) {
+        String prefix = pathUtil.normalizeStoragePath(path);
         String userRootPath = path.contains("/") ? path.substring(0, path.indexOf("/") + 1) : path + "/";
 
         List<StorageItem> items = storageService.list(prefix, false);
@@ -37,7 +37,7 @@ public class FileSearchServiceImpl implements FileSearchService {
     }
 
     @Override
-    public List<ContentDto> searchFiles(String userRootPath, String searchQuery) {
+    public List<StorageItemDto> searchFileOrDirectory(String userRootPath, String searchQuery) {
         if (searchQuery == null || searchQuery.isEmpty()) {
             return List.of();
         }
@@ -51,8 +51,8 @@ public class FileSearchServiceImpl implements FileSearchService {
     }
 
     @Override
-    public List<ContentDto> getListFilesInFolder(String path) {
-        String prefix = pathUtil.correctPath(path);
+    public List<StorageItemDto> getContentOfFolder(String path) {
+        String prefix = pathUtil.normalizeStoragePath(path);
         String currentDirName = path.substring(path.lastIndexOf("/") + 1);
 
         List<StorageItem> items = storageService.list(prefix, false);
@@ -82,15 +82,15 @@ public class FileSearchServiceImpl implements FileSearchService {
         return fileName.toLowerCase().contains(searchQuery.toLowerCase());
     }
 
-    private ContentDto createDirectoryDto(StorageItem item, String userRootPath) {
+    private StorageItemDto createDirectoryDto(StorageItem item, String userRootPath) {
         String objectPath = item.getPath();
         String folderName = Paths.get(objectPath).getFileName().toString();
 
         String displayName = objectPath.equals(userRootPath) ? "Файлы" : folderName;
 
-        return new ContentDto(
+        return new StorageItemDto(
                 displayName,
-                contentIconUtil.getContentIcon(folderName, false),
+                storageItemIconManager.resolveItemTypeIcon(folderName, false),
                 objectPath
         );
     }

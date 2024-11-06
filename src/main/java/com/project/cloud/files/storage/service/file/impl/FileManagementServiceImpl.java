@@ -47,7 +47,7 @@ public class FileManagementServiceImpl implements FileManagementService {
 
     @Override
     public boolean isNameUnique(String path, String name) {
-        path = pathUtil.correctPath(path);
+        path = pathUtil.normalizeStoragePath(path);
         List<StorageItem> items = storageService.list(path, false);
         return items.stream()
                 .filter(item -> !item.isFile())
@@ -57,7 +57,7 @@ public class FileManagementServiceImpl implements FileManagementService {
 
     @Override
     public void createDirectory(String path) {
-        path = pathUtil.correctPath(path);
+        path = pathUtil.normalizeStoragePath(path);
         storageService.createDirectory(path);
     }
 

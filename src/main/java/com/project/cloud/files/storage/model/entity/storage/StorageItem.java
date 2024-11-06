@@ -10,10 +10,11 @@ import java.time.ZoneId;
 @Getter
 public class StorageItem {
 
+    private final boolean isFile;
     private final String name;
     private final String path;
-    private final boolean isFile;
     private final LocalDateTime lastModified;
+
 
     public StorageItem(Item item) {
         this.path = item.objectName();

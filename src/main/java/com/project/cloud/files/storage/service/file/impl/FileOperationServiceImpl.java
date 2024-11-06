@@ -1,6 +1,6 @@
 package com.project.cloud.files.storage.service.file.impl;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import com.project.cloud.files.storage.service.file.*;
 import com.project.cloud.files.storage.service.trash.TrashService;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,19 @@ public class FileOperationServiceImpl implements FileOperationService {
     private final FileManagementService managementService;
 
     @Override
-    public void upload(MultipartFile file, String path) {
+    public List<StorageItemDto> getPageContent(String rootPath, String path, String query) {
+        if (query == null || query.isEmpty()) {
+            return getContentOfFolder(path);
+        } else return searchFileOrDirectory(rootPath, query);
+    }
+
+    @Override
+    public void uploadFileOrDirectory(MultipartFile file, String path) {
         uploadService.upload(file, path);
     }
 
     @Override
-    public InputStream download(String path, boolean isFile) {
+    public InputStream downloadFileOrDirectory(String path, boolean isFile) {
         return downloadService.download(path, isFile);
     }
 
@@ -37,7 +44,7 @@ public class FileOperationServiceImpl implements FileOperationService {
     }
 
     @Override
-    public void delete(String path, String name, boolean isFile) {
+    public void deleteFileOrDirectory(String path, String name, boolean isFile) {
         if (isFile) {
             managementService.deleteFile(path, name);
         } else {
@@ -46,33 +53,33 @@ public class FileOperationServiceImpl implements FileOperationService {
     }
 
     @Override
-    public List<ContentDto> listDirectory(String path, String name) {
+    public List<StorageItemDto> listDirectory(String path, String name) {
         return searchService.listDirectory(path, name);
     }
 
     @Override
-    public void moveContent(String oldPath, String newPath, boolean isFile) {
+    public void moveFileOrDirectory(String oldPath, String newPath, boolean isFile) {
         managementService.moveContent(oldPath, newPath, isFile);
     }
 
     @Override
-    public List<ContentDto> searchContent(String rootPath, String query) {
-        return searchService.searchFiles(rootPath, query);
+    public List<StorageItemDto> searchFileOrDirectory(String rootPath, String query) {
+        return searchService.searchFileOrDirectory(rootPath, query);
     }
 
     @Override
-    public List<ContentDto> getFilesInFolder(String path) {
-        return searchService.getListFilesInFolder(path);
+    public List<StorageItemDto> getContentOfFolder(String path) {
+        return searchService.getContentOfFolder(path);
     }
 
 
     @Override
-    public boolean directoryDoesNotExist(String path) {
+    public boolean isDirectoryMissing(String path) {
         return !managementService.isDirectoryExists(path);
     }
 
     @Override
-    public boolean folderNameNotUnique(String path, String name) {
+    public boolean isDirectoryNameTaken(String path, String name) {
         return !managementService.isNameUnique(path, name);
     }
 

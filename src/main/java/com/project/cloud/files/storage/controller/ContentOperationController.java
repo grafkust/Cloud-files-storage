@@ -1,6 +1,6 @@
 package com.project.cloud.files.storage.controller;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import com.project.cloud.files.storage.service.file.FileOperationService;
 import com.project.cloud.files.storage.util.validator.PathUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,20 +22,19 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class ContentActionController {
+public class ContentOperationController {
 
     private final FileOperationService fileOperationService;
     private final PathUtil pathUtil;
 
     @PostMapping("/create-folder")
-    public String createFolder(@RequestParam String path,
-                               @RequestParam String name, HttpSession session) {
+    public String createDirectory(@RequestParam String path,
+                                  @RequestParam String name, HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
-        publicPath = pathUtil.encodePath(publicPath);
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath, true);
 
-        boolean folderNameNotUnique = fileOperationService.folderNameNotUnique(innerPath, name);
+        boolean folderNameNotUnique = fileOperationService.isDirectoryNameTaken(innerPath, name);
 
         if (folderNameNotUnique) {
             return path.isEmpty() ? "redirect:/?error=folder-name" :
@@ -50,25 +49,25 @@ public class ContentActionController {
     }
 
     @PostMapping("/upload-content")
-    public String uploadContent(@RequestParam("data") MultipartFile[] data,
-                                @RequestParam String path, HttpSession session) {
+    public String uploadFileOrDirectory(@RequestParam("data") MultipartFile[] data,
+                                        @RequestParam String path, HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
         for (MultipartFile file : data) {
-            fileOperationService.upload(file, innerPath);
+            fileOperationService.uploadFileOrDirectory(file, innerPath);
         }
 
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
-        publicPath = pathUtil.encodePath(publicPath);
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath, true);
+
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 
     @GetMapping("/download-content")
-    public void downloadContent(@RequestParam String path,
-                                @RequestParam String name,
-                                @RequestParam boolean isFile,
-                                HttpServletResponse response, HttpSession session) throws FileUploadException {
+    public void downloadFileOrDirectory(@RequestParam String path,
+                                        @RequestParam String name,
+                                        @RequestParam boolean isFile,
+                                        HttpServletResponse response, HttpSession session) throws FileUploadException {
 
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
@@ -81,7 +80,7 @@ public class ContentActionController {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedName + "\";");
         response.setContentType("application/" + contentType);
 
-        try (InputStream inputStream = fileOperationService.download(contentPath, isFile);
+        try (InputStream inputStream = fileOperationService.downloadFileOrDirectory(contentPath, isFile);
              OutputStream outputStream = response.getOutputStream()) {
 
             byte[] buffer = new byte[8192];
@@ -96,10 +95,10 @@ public class ContentActionController {
     }
 
     @PostMapping("/move-content")
-    public String moveContent(@RequestParam String path,
-                              @RequestParam String name,
-                              @RequestParam String destinationPath,
-                              @RequestParam boolean isFile, HttpSession session) {
+    public String moveFileOrDirectory(@RequestParam String path,
+                                      @RequestParam String name,
+                                      @RequestParam String destinationPath,
+                                      @RequestParam boolean isFile, HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
@@ -112,29 +111,29 @@ public class ContentActionController {
 
         if (destinationPath.equals("Trash")) {
             destinationPath = userRootPath + "/Trash";
-            fileOperationService.moveContent(oldPath, destinationPath, isFile);
+            fileOperationService.moveFileOrDirectory(oldPath, destinationPath, isFile);
             return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
         }
-        fileOperationService.moveContent(oldPath, destinationPath, isFile);
+        fileOperationService.moveFileOrDirectory(oldPath, destinationPath, isFile);
 
-        String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath);
-        publicPath = pathUtil.encodePath(publicPath);
+        String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath, true);
+
         return String.format("redirect:/?path=%s", publicPath);
     }
 
     @GetMapping("/get-directories")
-    public String getDirectories(@RequestParam String path,
-                                 @RequestParam String name,
-                                 @RequestParam String filePath,
-                                 Model model, HttpSession session) {
+    public String listDirectories(@RequestParam String path,
+                                  @RequestParam String name,
+                                  @RequestParam String filePath,
+                                  Model model, HttpSession session) {
 
         filePath = pathUtil.getContentRootPath(filePath, name);
 
         String userRootPath = pathUtil.getUserRootPath(session);
 
-        String publicPath = path.isEmpty() ? path : pathUtil.createPublicPath(path, userRootPath);
+        String publicPath = pathUtil.createPublicPath(path, userRootPath, false);
         String innerPath = pathUtil.createInnerPath(publicPath, userRootPath);
-        List<ContentDto> folders = fileOperationService.listDirectory(innerPath, name);
+        List<StorageItemDto> folders = fileOperationService.listDirectory(innerPath, name);
 
         model.addAttribute("directories", folders);
         model.addAttribute("filePath", filePath);
@@ -144,22 +143,21 @@ public class ContentActionController {
     }
 
     @PostMapping("/delete-content")
-    public String deleteContent(@RequestParam String path,
-                                @RequestParam String name,
-                                @RequestParam boolean isFile,
-                                HttpSession session) {
+    public String deleteFileOrDirectory(@RequestParam String path,
+                                        @RequestParam String name,
+                                        @RequestParam boolean isFile,
+                                        HttpSession session) {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
         boolean isInTrash = innerPath.contains("Trash");
 
         if (isInTrash) {
-            fileOperationService.delete(innerPath, name, isFile);
+            fileOperationService.deleteFileOrDirectory(innerPath, name, isFile);
         } else
-            moveContent(path, name, "Trash", isFile, session);
+            moveFileOrDirectory(path, name, "Trash", isFile, session);
 
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
-        publicPath = pathUtil.encodePath(publicPath);
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath, true);
         return publicPath.isEmpty() ? "redirect:/" : String.format("redirect:/?path=%s", publicPath);
     }
 

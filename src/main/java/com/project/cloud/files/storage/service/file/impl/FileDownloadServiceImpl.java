@@ -34,9 +34,9 @@ public class FileDownloadServiceImpl implements FileDownloadService {
     }
 
     private InputStream downloadFolder(String folderPath) {
-
-        String normalizedPath = pathUtil.correctPath(folderPath);
+        String normalizedPath = pathUtil.normalizeStoragePath(folderPath);
         List<StorageItem> items = storageService.list(normalizedPath, true);
+
         File tempZipFile = createTempFile();
         try {
             createZipArchive(tempZipFile, items, normalizedPath);

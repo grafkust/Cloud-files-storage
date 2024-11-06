@@ -1,6 +1,6 @@
 package com.project.cloud.files.storage.service.file;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -8,28 +8,29 @@ import java.util.List;
 
 public interface FileOperationService {
 
-    void upload(MultipartFile file, String path);
+    void uploadFileOrDirectory(MultipartFile file, String path);
 
-    InputStream download(String path, boolean isFile);
+    InputStream downloadFileOrDirectory(String path, boolean isFile);
 
 
     void createDirectory(String path);
 
-    void delete(String path, String name, boolean isFile);
+    void deleteFileOrDirectory(String path, String name, boolean isFile);
 
-    List<ContentDto> listDirectory(String path, String name);
-
-
-    void moveContent(String oldPath, String newPath, boolean isFile);
-
-    List<ContentDto> searchContent(String rootPath, String query);
-
-    List<ContentDto> getFilesInFolder(String path);
+    List<StorageItemDto> listDirectory(String path, String name);
 
 
-    boolean directoryDoesNotExist(String path);
+    void moveFileOrDirectory(String oldPath, String newPath, boolean isFile);
 
-    boolean folderNameNotUnique(String path, String name);
+    List<StorageItemDto> searchFileOrDirectory(String rootPath, String query);
+
+    List<StorageItemDto> getContentOfFolder(String path);
+
+    List<StorageItemDto> getPageContent(String rootPath, String path, String query);
+
+    boolean isDirectoryMissing(String path);
+
+    boolean isDirectoryNameTaken(String path, String name);
 
     void deleteExpiredTrashItems();
 }

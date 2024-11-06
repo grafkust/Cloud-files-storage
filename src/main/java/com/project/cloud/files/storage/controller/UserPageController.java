@@ -1,6 +1,6 @@
 package com.project.cloud.files.storage.controller;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import com.project.cloud.files.storage.service.file.FileOperationService;
 import com.project.cloud.files.storage.util.validator.PathUtil;
 import jakarta.servlet.http.HttpSession;
@@ -25,10 +25,10 @@ public class UserPageController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String trashPath = userRootPath + "/Trash";
 
-        if (fileOperationService.directoryDoesNotExist(userRootPath))
+        if (fileOperationService.isDirectoryMissing(userRootPath))
             fileOperationService.createDirectory(userRootPath);
 
-        if (fileOperationService.directoryDoesNotExist(trashPath))
+        if (fileOperationService.isDirectoryMissing(trashPath))
             fileOperationService.createDirectory(trashPath);
 
         return "redirect:/";
@@ -44,18 +44,14 @@ public class UserPageController {
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
 
-        boolean pathNotExist = fileOperationService.directoryDoesNotExist(innerPath);
+        boolean pathNotExist = fileOperationService.isDirectoryMissing(innerPath);
 
         if (pathNotExist)
             return "redirect:/";
 
-        List<ContentDto> pageContent;
+        List<StorageItemDto> pageContent = fileOperationService.getPageContent(userRootPath, innerPath, query);
 
-        if (query == null || query.isEmpty()) {
-            pageContent = fileOperationService.getFilesInFolder(innerPath);
-        } else pageContent = fileOperationService.searchContent(userRootPath, query);
-
-        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath);
+        String publicPath = pathUtil.createPublicPath(innerPath, userRootPath, false);
 
         model.addAttribute("username", username);
         model.addAttribute("content", pageContent);

@@ -3,17 +3,17 @@ package com.project.cloud.files.storage.util.hepler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ContentIconUtil {
+public class StorageItemIconManager {
 
-    public String getContentIcon(String fileName, boolean isFile) {
+    public String resolveItemTypeIcon(String fileName, boolean isFile) {
 
         if (fileName == null || fileName.isEmpty())
             return "/icon/file.png";
 
-        return isFile ? getFileIcon(fileName) : getFolderIcon();
+        return isFile ? resolveFileTypeIcon(fileName) : getDirectoryIcon();
     }
 
-    private String getFileIcon(String fileName) {
+    private String resolveFileTypeIcon(String fileName) {
 
         if (fileName.endsWith(".pdf")) {
             return "/icon/pdf.png";
@@ -35,7 +35,7 @@ public class ContentIconUtil {
         } else return "/icon/file.png";
     }
 
-    private String getFolderIcon() {
+    private String getDirectoryIcon() {
         return "/icon/folder.png";
     }
 

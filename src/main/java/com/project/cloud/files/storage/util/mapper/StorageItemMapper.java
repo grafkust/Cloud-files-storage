@@ -1,8 +1,8 @@
 package com.project.cloud.files.storage.util.mapper;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 import com.project.cloud.files.storage.model.entity.storage.StorageItem;
-import com.project.cloud.files.storage.util.hepler.ContentIconUtil;
+import com.project.cloud.files.storage.util.hepler.StorageItemIconManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class StorageItemMapper {
 
-    private final ContentIconUtil contentIconUtil;
+    private final StorageItemIconManager storageItemIconManager;
 
     @Value("${application.date-pattern}")
     private String dateTimeFormatPattern;
 
-    public ContentDto toContentDto(StorageItem item, boolean isSearchResult) {
+    public StorageItemDto toContentDto(StorageItem item, boolean isSearchResult) {
         String objectPath = item.getPath();
         String fileName = Paths.get(objectPath).getFileName().toString();
         boolean isFile = item.isFile();
@@ -31,10 +31,10 @@ public class StorageItemMapper {
 
         String formattedDate = isFile ? formatLastModifiedDate(item.getLastModified()) : "";
 
-        return new ContentDto(
+        return new StorageItemDto(
                 fileName,
                 formattedDate,
-                contentIconUtil.getContentIcon(fileName, isFile),
+                storageItemIconManager.resolveItemTypeIcon(fileName, isFile),
                 isFile,
                 path,
                 isSearchResult

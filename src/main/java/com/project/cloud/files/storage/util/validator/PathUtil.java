@@ -15,9 +15,13 @@ public class PathUtil {
 
     private final UserService userService;
 
-    public String createPublicPath(String path, String userRootPath) {
-        return path.equals(userRootPath) ? ""
+    public String createPublicPath(String path, String userRootPath, boolean encode) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+        String publicPath = path.equals(userRootPath) ? ""
                 : path.substring(userRootPath.length() + 1).replaceAll("/$", "");
+        return encode ? encodePath(publicPath) : publicPath;
     }
 
     public String createInnerPath(String path, String userRootPath) {
@@ -34,7 +38,7 @@ public class PathUtil {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
-    public String correctPath(String path) {
+    public String normalizeStoragePath(String path) {
         return path.endsWith("/") ? path : path + "/";
     }
 

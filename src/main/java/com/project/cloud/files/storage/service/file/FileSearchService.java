@@ -1,14 +1,14 @@
 package com.project.cloud.files.storage.service.file;
 
-import com.project.cloud.files.storage.model.dto.ContentDto;
+import com.project.cloud.files.storage.model.dto.StorageItemDto;
 
 import java.util.List;
 
 public interface FileSearchService {
 
-    List<ContentDto> listDirectory(String path, String excludeName);
+    List<StorageItemDto> listDirectory(String path, String excludeName);
 
-    List<ContentDto> searchFiles(String userRootPath, String searchQuery);
+    List<StorageItemDto> searchFileOrDirectory(String userRootPath, String searchQuery);
 
-    List<ContentDto> getListFilesInFolder(String path);
+    List<StorageItemDto> getContentOfFolder(String path);
 }

@@ -25,7 +25,7 @@ public class MinioStorageServiceImpl implements StorageService {
 
     @Override
     public void store(InputStream content, String path) {
-        try {
+        try (content) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(mainBucket)
                     .object(path)

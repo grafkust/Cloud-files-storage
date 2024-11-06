@@ -22,7 +22,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     public void upload(MultipartFile file, String path) {
         try {
 
-            path = pathUtil.correctPath(path);
+            path = pathUtil.normalizeStoragePath(path);
 
             String fullPath = pathUtil.createFullPath(file, path);
 

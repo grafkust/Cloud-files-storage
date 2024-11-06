@@ -1,30 +1,17 @@
 package com.project.cloud.files.storage.config;
 
 import com.project.cloud.files.storage.prop.MailProperties;
-import com.project.cloud.files.storage.prop.MinioProperties;
-import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableScheduling
-public class ApplicationConfig {
+public class MailSandlerConfig {
 
-    private final MinioProperties minioProperties;
     private final MailProperties mailProperties;
-
-    @Bean
-    public MinioClient minioClient() {
-        return MinioClient.builder()
-                .endpoint(minioProperties.getUrl())
-                .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())
-                .build();
-    }
 
     @Bean
     public JavaMailSender getJavaMailSender() {
@@ -37,5 +24,4 @@ public class ApplicationConfig {
         mailSender.getJavaMailProperties();
         return mailSender;
     }
-
 }
