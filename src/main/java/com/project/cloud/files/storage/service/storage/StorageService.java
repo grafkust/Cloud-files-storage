@@ -22,4 +22,6 @@ public interface StorageService {
     void move(String sourcePath, String destinationPath);
 
     void createDirectory(String path);
+
+    List<StorageItem> listWithCommonPrefixes(String path);
 }

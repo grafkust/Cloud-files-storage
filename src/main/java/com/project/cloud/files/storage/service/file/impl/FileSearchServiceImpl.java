@@ -42,7 +42,7 @@ public class FileSearchServiceImpl implements FileSearchService {
             return List.of();
         }
 
-        List<StorageItem> items = storageService.list(userRootPath, true);
+        List<StorageItem> items = storageService.listWithCommonPrefixes(userRootPath);
 
         return items.stream()
                 .filter(item -> matchesSearchCriteria(item, searchQuery))

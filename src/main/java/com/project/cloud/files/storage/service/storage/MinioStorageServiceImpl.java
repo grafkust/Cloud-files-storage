@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -123,6 +123,43 @@ public class MinioStorageServiceImpl implements StorageService {
                     .build());
         } catch (Exception e) {
             throw new StorageOperationException("Failed to create new directory in storage", e);
+        }
+    }
+
+    @Override
+    public List<StorageItem> listWithCommonPrefixes(String path) {
+        try {
+
+            Set<StorageItem> uniqueResults = new LinkedHashSet<>();
+
+            Iterable<Result<Item>> listObjects = minioClient.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(mainBucket)
+                            .prefix(path)
+                            .recursive(true)
+                            .build()
+            );
+
+            for (Result<Item> result : listObjects) {
+                Item item = result.get();
+                if (item != null) {
+                    String objectPath = item.objectName();
+
+                    uniqueResults.add(new StorageItem(item));
+
+                    String parentPath = objectPath;
+                    while (parentPath.contains("/")) {
+                        parentPath = parentPath.substring(0, parentPath.lastIndexOf('/'));
+                        if (!parentPath.isEmpty() && !parentPath.equals(path.replaceAll("/$", ""))) {
+                            uniqueResults.add(new StorageItem(parentPath + "/"));
+                        }
+                    }
+                }
+            }
+            return new ArrayList<>(uniqueResults);
+
+        } catch (Exception e) {
+            throw new StorageOperationException("Failed to list objects with prefixes", e);
         }
     }
 

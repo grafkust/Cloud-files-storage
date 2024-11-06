@@ -71,13 +71,22 @@ public class FileManagementServiceImpl implements FileManagementService {
 
     private void moveFolder(String sourcePath, String destinationPath) {
 
-        String folderName = sourcePath.substring(sourcePath.lastIndexOf("/", sourcePath.length() - 2) + 1);
+        String normalizeSourcePath = pathUtil.normalizeStoragePath(sourcePath);
+
+        String folderName = normalizeSourcePath.substring(normalizeSourcePath.lastIndexOf("/", normalizeSourcePath.length() - 2) + 1);
         String newFolderPath = destinationPath + folderName;
-        storageService.createDirectory(newFolderPath);
 
-        List<StorageItem> results = storageService.list(sourcePath, true);
+        List<StorageItem> results = storageService.list(normalizeSourcePath, true);
 
-        for (StorageItem item : results) {
+        List<StorageItem> folderItems = results.stream()
+                .filter(item -> {
+                    String itemPath = item.getPath();
+                    String parentPath = itemPath.substring(0, itemPath.lastIndexOf('/') + 1);
+                    return parentPath.startsWith(normalizeSourcePath);
+                })
+                .toList();
+
+        for (StorageItem item : folderItems) {
             try {
                 String oldItemPath = item.getPath();
                 String relativePath = oldItemPath.substring(sourcePath.length());

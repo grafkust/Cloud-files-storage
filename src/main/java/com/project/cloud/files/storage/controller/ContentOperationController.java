@@ -110,7 +110,7 @@ public class ContentOperationController {
         String oldPath = innerPath + "/" + name;
 
         if (destinationPath.equals("Trash")) {
-            destinationPath = userRootPath + "/Trash";
+            destinationPath = userRootPath + "/Trash/";
             fileOperationService.moveFileOrDirectory(oldPath, destinationPath, isFile);
             return String.format("redirect:/?path=%s", pathUtil.encodePath(path));
         }

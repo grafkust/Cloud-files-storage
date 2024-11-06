@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 
 @Getter
 public class StorageItem {
@@ -23,6 +24,13 @@ public class StorageItem {
         this.lastModified = getModificationDate(item);
     }
 
+    public StorageItem(String path) {
+        this.path = path;
+        this.name = Paths.get(path.replaceAll("/$", "")).getFileName().toString();
+        this.isFile = false;
+        this.lastModified = LocalDateTime.now();
+    }
+
     private LocalDateTime getModificationDate(Item item) {
         try {
             return item.lastModified() != null ?
@@ -34,6 +42,19 @@ public class StorageItem {
         } catch (Exception e) {
             return LocalDateTime.now();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StorageItem that = (StorageItem) o;
+        return path.equals(that.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 
 
