@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 @RequiredArgsConstructor
-public class MailSandlerConfig {
+public class MailConfig {
 
     private final MailProperties mailProperties;
 

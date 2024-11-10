@@ -2,32 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Registration</title>
-  <link rel="stylesheet"  href="/auth/auth-style.css">
+    <link href="/auth/auth-style.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h2>Registration form</h2>
-    <form class="auth-form" action = "/auth/registration" method="post" th:object="${userDto}">
+    <form action="/auth/registration" class="auth-form" method="post" th:object="${userDto}">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required th:field="*{username}">
-            <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-            <div class="error-message" th:if = "${fieldNotUnique.contains('username')}"  th:text = "${fieldNotUnique}"></div>
+            <input id="username" name="username" placeholder="Enter your username" required th:field="*{username}"
+                   type="text">
+            <div class="error-message" th:errors="*{username}" th:if="${#fields.hasErrors('username')}"></div>
+            <div class="error-message" th:if="${fieldNotUnique.contains('username')}" th:text="${fieldNotUnique}"></div>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email"  name="email" placeholder="Enter your email" required th:field="*{email}">
-            <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-            <div class="error-message" th:if = "${fieldNotUnique.contains('email')}" th:text = "${fieldNotUnique}"></div>
+            <input id="email" name="email" placeholder="Enter your email" required th:field="*{email}" type="email">
+            <div class="error-message" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></div>
+            <div class="error-message" th:if="${fieldNotUnique.contains('email')}" th:text="${fieldNotUnique}"></div>
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
-            <input type="password" id="password"  name="password" placeholder="Enter your password" required th:field="*{password}">
-            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            <input id="password" name="password" placeholder="Enter your password" required th:field="*{password}"
+                   type="password">
+            <div class="error-message" th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></div>
         </div>
-        <button type="submit" class="btn">Registration</button>
+        <button class="btn" type="submit">Registration</button>
     </form>
     <p>Already have an account? <a href="/auth/login">Authorization</a></p>
 </div>

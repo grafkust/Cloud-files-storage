@@ -2,18 +2,18 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-    <div th:each="dir : ${directories}" class="folder-item"
-         th:data-file-name="${name}"
-         th:data-file-path="${filePath}"
-         onclick="selectDirectory(this)"
-         ondblclick="navigateToFolder(this)">
+<div class="folder-item" onclick="selectDirectory(this)"
+     ondblclick="navigateToFolder(this)"
+     th:data-file-name="${name}"
+     th:data-file-path="${filePath}"
+     th:each="dir : ${directories}">
 
-        <img alt="folder-icon" th:src="${dir.iconPath}" class="folder-icon">
-        <div class="folder-info">
-            <span class="folder-name" th:text="${dir.name}"></span>
-            <input type="hidden" class="folder-path" th:value="${dir.path}">
-        </div>
+    <img alt="folder-icon" class="folder-icon" th:src="${dir.iconPath}">
+    <div class="folder-info">
+        <span class="folder-name" th:text="${dir.name}"></span>
+        <input class="folder-path" th:value="${dir.path}" type="hidden">
     </div>
+</div>
 
 </body>
 </html>

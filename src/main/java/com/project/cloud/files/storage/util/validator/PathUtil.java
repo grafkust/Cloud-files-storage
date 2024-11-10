@@ -53,5 +53,14 @@ public class PathUtil {
         return path + fileName;
     }
 
+    public boolean isContainsSpecialCharacters(String name) {
+
+        if (name == null || name.isEmpty())
+            return true;
+
+        String allowedCharactersPattern = "^[a-zA-Zа-яА-ЯёЁ0-9\\s\\-_.]+$";
+        return !name.matches(allowedCharactersPattern);
+    }
+
 
 }

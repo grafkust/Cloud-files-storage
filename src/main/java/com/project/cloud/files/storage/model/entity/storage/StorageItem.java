@@ -2,6 +2,7 @@ package com.project.cloud.files.storage.model.entity.storage;
 
 import io.minio.messages.Item;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -11,10 +12,11 @@ import java.util.Objects;
 @Getter
 public class StorageItem {
 
-    private final boolean isFile;
     private final String name;
     private final String path;
     private final LocalDateTime lastModified;
+    @Setter
+    private boolean isFile;
 
 
     public StorageItem(Item item) {

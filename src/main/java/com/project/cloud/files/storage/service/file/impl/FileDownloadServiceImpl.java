@@ -50,7 +50,7 @@ public class FileDownloadServiceImpl implements FileDownloadService {
     private File createTempFile() {
         try {
             return File.createTempFile("download_", ".zip");
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FileDownloadException("Failed to create temporary file", e);
         }
     }

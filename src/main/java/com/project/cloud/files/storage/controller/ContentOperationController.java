@@ -30,15 +30,20 @@ public class ContentOperationController {
     @PostMapping("/create-folder")
     public String createDirectory(@RequestParam String path,
                                   @RequestParam String name, HttpSession session) {
+
+
         String userRootPath = pathUtil.getUserRootPath(session);
         String innerPath = pathUtil.createInnerPath(path, userRootPath);
         String publicPath = pathUtil.createPublicPath(innerPath, userRootPath, true);
 
         boolean folderNameNotUnique = fileOperationService.isDirectoryNameTaken(innerPath, name);
+        boolean invalidName = pathUtil.isContainsSpecialCharacters(name);
 
-        if (folderNameNotUnique) {
-            return path.isEmpty() ? "redirect:/?error=folder-name" :
-                    String.format("redirect:/?path=%s&error=folder-name", publicPath);
+        if (folderNameNotUnique || invalidName) {
+            String errorType = folderNameNotUnique ? "duplicate" : "invalid";
+            return path.isEmpty()
+                    ? String.format("redirect:/?error=%s-folder-name", errorType)
+                    : String.format("redirect:/?path=%s&error=%s-name", publicPath, errorType);
         }
 
         String folderPath = String.format("%s/%s", innerPath, name);
@@ -118,7 +123,7 @@ public class ContentOperationController {
 
         String publicPath = pathUtil.createPublicPath(destinationPath, userRootPath, true);
 
-        return String.format("redirect:/?path=%s", publicPath);
+        return publicPath.isEmpty() ? "redirect:/": String.format("redirect:/?path=%s", publicPath);
     }
 
     @GetMapping("/get-directories")

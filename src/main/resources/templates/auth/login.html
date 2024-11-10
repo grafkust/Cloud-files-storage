@@ -2,28 +2,32 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Authorization</title>
-    <link rel="stylesheet" href="/auth/auth-style.css">
+    <link href="/auth/auth-style.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h2>Authorization form</h2>
-    <form class="auth-form" action="/perform_login" method="post">
+    <form action="/perform_login" class="auth-form" method="post">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" th:value = "${username}" required>
-            <div class="error-message" th:if = "${illegalArgument.contains('username')}" th:text = "${illegalArgument}"></div>
+            <input id="username" name="username" placeholder="Enter your username" required th:value="${username}"
+                   type="text">
+            <div class="error-message" th:if="${illegalArgument.contains('username')}"
+                 th:text="${illegalArgument}"></div>
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            <div class="error-message" th:if = "${illegalArgument.contains('password')}" th:text = "${illegalArgument}"></div>
+            <input id="password" name="password" placeholder="Enter your password" required type="password">
+            <div class="error-message" th:if="${illegalArgument.contains('password')}"
+                 th:text="${illegalArgument}"></div>
         </div>
         <div th:if="${reg != null && reg == 'success'}">
-            <p style="color: forestgreen">Регистрация прошла успешно. Пожалуйста, проверьте Email указанный при регистрации.</p>
+            <p style="color: forestgreen">Регистрация прошла успешно. Пожалуйста, проверьте Email указанный при
+                регистрации.</p>
         </div>
-        <button type="submit" class="btn">Authorization</button>
+        <button class="btn" type="submit">Authorization</button>
     </form>
     <p>Don't have an account? <a href="/auth/registration">Registration</a></p>
 </div>

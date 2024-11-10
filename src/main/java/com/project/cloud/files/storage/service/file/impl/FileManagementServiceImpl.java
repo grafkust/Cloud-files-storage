@@ -32,7 +32,8 @@ public class FileManagementServiceImpl implements FileManagementService {
 
     @Override
     public void deleteDirectory(String path, String name) {
-        String folder = path + "/" + name + "/";
+        path = pathUtil.normalizeStoragePath(path);
+        String folder = path + name + "/";
         List<StorageItem> list = storageService.list(folder, true);
         for (StorageItem item : list) {
             storageService.delete(item.getPath());

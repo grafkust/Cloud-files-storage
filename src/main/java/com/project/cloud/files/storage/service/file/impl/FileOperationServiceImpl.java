@@ -28,6 +28,14 @@ public class FileOperationServiceImpl implements FileOperationService {
         } else return searchFileOrDirectory(rootPath, query);
     }
 
+    private List<StorageItemDto> getContentOfFolder(String path) {
+        return searchService.getContentOfFolder(path);
+    }
+
+    private List<StorageItemDto> searchFileOrDirectory(String rootPath, String query) {
+        return searchService.searchFileOrDirectory(rootPath, query);
+    }
+
     @Override
     public void uploadFileOrDirectory(MultipartFile file, String path) {
         uploadService.upload(file, path);
@@ -60,16 +68,6 @@ public class FileOperationServiceImpl implements FileOperationService {
     @Override
     public void moveFileOrDirectory(String oldPath, String newPath, boolean isFile) {
         managementService.moveContent(oldPath, newPath, isFile);
-    }
-
-    @Override
-    public List<StorageItemDto> searchFileOrDirectory(String rootPath, String query) {
-        return searchService.searchFileOrDirectory(rootPath, query);
-    }
-
-    @Override
-    public List<StorageItemDto> getContentOfFolder(String path) {
-        return searchService.getContentOfFolder(path);
     }
 
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>405 - Method Not Allowed</title>
-    <link rel="stylesheet" href="/error/405-style.css">
+    <link href="/error/405-style.css" rel="stylesheet">
 </head>
 <body>
 <main class="main" role="main">
@@ -19,7 +19,7 @@
                 <h3>Отправленный запрос:</h3>
                 <ul class="methods-list">
                     <li>
-                     <span th:text="${requestMethod}" class="method-tag error"></span>
+                        <span class="method-tag error" th:text="${requestMethod}"></span>
                     </li>
                 </ul>
 
@@ -29,7 +29,7 @@
                 <h3>Поддерживаемые методы:</h3>
                 <ul class="methods-list">
                     <li th:each="method : ${supportedMethods}">
-                        <span th:text="${method}" class="method-tag"></span>
+                        <span class="method-tag" th:text="${method}"></span>
                     </li>
                     <li th:if="${supportedMethods == null}">
                         <span class="method-tag"></span>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div style="margin-top: 30px;">
-            <a href="/" class="button">Вернуться на главную</a>
+            <a class="button" href="/">Вернуться на главную</a>
         </div>
     </div>
 </main>

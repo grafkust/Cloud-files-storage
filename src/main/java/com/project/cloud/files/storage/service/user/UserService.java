@@ -25,18 +25,14 @@ public class UserService {
 
     @Transactional
     public void create(User user) {
-
         checkFieldsOnUnique(user);
-
-        Set<Role> roles = Set.of(Role.ROLE_USER);
-        user.setRoles(roles);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        prepareUser(user);
         userRepository.save(user);
     }
 
     public User getByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+                .orElseThrow(() -> new UsernameNotFoundException("User with username '" + username + "' not found"));
     }
 
     public Long getIdByUsername(String username) {
@@ -63,5 +59,19 @@ public class UserService {
         UserDto userDto = userMapper.toDto(user);
         exception.setUserDto(userDto);
         throw exception;
+    }
+
+    private void prepareUser(User user) {
+        setRoleUser(user);
+        setEncodePassword(user);
+    }
+
+    private void setEncodePassword(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    }
+
+    private void setRoleUser(User user) {
+        Set<Role> roles = Set.of(Role.ROLE_USER);
+        user.setRoles(roles);
     }
 }

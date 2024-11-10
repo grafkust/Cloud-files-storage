@@ -1,43 +1,47 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ошибка сервера</title>
-    <link rel="stylesheet" href="/error/500-style.css">
+  <title>Ошибка сервера</title>
+  <link href="/error/500-style.css" rel="stylesheet">
 </head>
 <body>
-    <header class="header">
-       <h3>Ой...Ой...Ой...</h3>
-    </header>
+  <div class="header">
+     <h3>Ой... Ой... Ой... Кажется, вы сломали GrafCloud!</h3>
+  </div>
 
-    <main class="main">
-        <div class="error-container">
-            <h1 class="error-code">500</h1>
-            <h2 class="error-title">Внутренняя ошибка сервера</h2>
-            <h1 th:text="${error}"></h1>
-            <p class="error-description">
-                Произошла непредвиденная ошибка при обработке вашего запроса.<br>
-            </p>
-            <div class="error-details">
-                <h3>Что можно сделать:</h3>
-                <ul>
-                    <li>Попробуйте обновить страницу через несколько минут</li>
-                    <li>Проверьте соединение с интернетом</li>
-                    <li>Очистите кеш браузера</li>
-                    <li>Если проблема сохраняется, сообщите об ошибке</li>
-                </ul>
-            </div>
-            <div class="buttons">
-                <a href="https://t.me/grafkust" target="_blank" class="button">Сообщить об ошибке</a>
-                <a href="/prepare-main-directories" class="button secondary">На главную</a>
-            </div>
-        </div>
-    </main>
+  <div class="main" role="main">
+    <div class="error-container">
+      <h1 class="error-code" id="section">500</h1>
+      <h2 class="error-title" id="внутренняя-ошибка-сервера">Внутренняя ошибка сервера</h2>
 
-    <footer class="footer">
-        <img src="/icon/grafkust-visualization.svg" alt="Logo" class="logo">
-       
-    </footer>
+      <p>Вот так сюрприз! Вы все-таки поймали ошибку, хотя я очень старался сделать так,
+        чтобы никто никогда не увидел эту страницу.
+        Похоже, что-то пошло не так и я не предусмотрел такого развития событий. </p>
+
+      <p>Теперь придется все чинить. А у меня на сегодня были большие планы... Но это мелочи.</p>
+
+      <p>Раз уж вы здесь, у меня есть небольшая просьба.
+        Не могли бы вы связаться со мной и рассказать, как вам удалось попасть на эту страницу?
+         Буду очень признателен за такую помощь.
+         А пока я буду дебажить код, вы можете продолжать использовать приложение,
+        но помнить, что существует риск снова здесь оказаться.</p>
+
+      <div class="error-details">  
+        <h3>А если не хотите возиться</h3>
+        <p>Можете просто вернуться на главную страницу и продолжить пользоваться GrafCloud.
+          Ведь это почти как Яндекс Диск, только 500-e страницы вылетают почаще</p>
+      </div>
+     
+      <div class="buttons">
+        <a href="https://t.me/grafkust" target="_blank" class="button">Рассказать об уязвимости</a>
+        <a href="/" class="button secondary">Вернуться на главную</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="/icon/grafkust-visualization.svg" class="logo" alt="Logo">
+    © 2024
+  </div>
 </body>
 </html>

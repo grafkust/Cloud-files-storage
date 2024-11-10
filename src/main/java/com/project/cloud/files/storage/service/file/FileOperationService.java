@@ -22,9 +22,6 @@ public interface FileOperationService {
 
     void moveFileOrDirectory(String oldPath, String newPath, boolean isFile);
 
-    List<StorageItemDto> searchFileOrDirectory(String rootPath, String query);
-
-    List<StorageItemDto> getContentOfFolder(String path);
 
     List<StorageItemDto> getPageContent(String rootPath, String path, String query);
 

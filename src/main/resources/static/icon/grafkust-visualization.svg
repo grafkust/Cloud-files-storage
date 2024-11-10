@@ -1,42 +1,42 @@
 <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="400" height="200" fill="#2a2a2a"/>
+    <!-- White Background -->
+    <rect width="400" height="200" fill="#ffffff"/>
 
-  <!-- Abstract letter shapes -->
-  <!-- G -->
-  <path d="M 40,50 A 30,30 0 1,1 40,110 L 40,80 L 70,80"
-        fill="none" stroke="#e0e0e0" stroke-width="8"/>
+    <!-- Abstract letter shapes -->
+    <!-- G -->
+    <path d="M 40,50 A 30,30 0 1,1 40,110 L 40,80 L 70,80"
+          fill="none" stroke="#333333" stroke-width="8"/>
 
-  <!-- R -->
-  <path d="M 90,50 L 90,110 M 90,50 Q 120,50 120,80 L 90,80 L 120,110"
-        fill="none" stroke="#4CAF50" stroke-width="8"/>
+    <!-- R -->
+    <path d="M 90,50 L 90,110 M 90,50 Q 120,50 120,80 L 90,80 L 120,110"
+          fill="none" stroke="#4CAF50" stroke-width="8"/>
 
-  <!-- A -->
-  <path d="M 130,110 L 150,50 L 170,110 M 140,80 L 160,80"
-        fill="none" stroke="#2196F3" stroke-width="8"/>
+    <!-- A -->
+    <path d="M 130,110 L 150,50 L 170,110 M 140,80 L 160,80"
+          fill="none" stroke="#2196F3" stroke-width="8"/>
 
-  <!-- F -->
-  <path d="M 180,50 L 180,110 M 180,50 L 210,50 M 180,80 L 200,80"
-        fill="none" stroke="#FFC107" stroke-width="8"/>
+    <!-- F -->
+    <path d="M 180,50 L 180,110 M 180,50 L 210,50 M 180,80 L 200,80"
+          fill="none" stroke="#FFC107" stroke-width="8"/>
 
-  <!-- K -->
-  <path d="M 220,50 L 220,110 M 220,80 L 250,50 M 220,80 L 250,110"
-        fill="none" stroke="#9C27B0" stroke-width="8"/>
+    <!-- K -->
+    <path d="M 220,50 L 220,110 M 220,80 L 250,50 M 220,80 L 250,110"
+          fill="none" stroke="#9C27B0" stroke-width="8"/>
 
-  <!-- U -->
-  <path d="M 260,50 L 260,100 A 15,15 0 0,0 290,100 L 290,50"
-        fill="none" stroke="#FF5722" stroke-width="8"/>
+    <!-- U -->
+    <path d="M 260,50 L 260,100 A 15,15 0 0,0 290,100 L 290,50"
+          fill="none" stroke="#FF5722" stroke-width="8"/>
 
-  <!-- S -->
-  <path d="M 320,60 C 340,60 340,80 320,80 C 300,80 300,100 320,100"
-        fill="none" stroke="#03A9F4" stroke-width="8"/>
+    <!-- S -->
+    <path d="M 320,60 C 340,60 340,80 320,80 C 300,80 300,100 320,100"
+          fill="none" stroke="#03A9F4" stroke-width="8"/>
 
-  <!-- T -->
-  <path d="M 330,50 L 370,50 M 350,50 L 350,110"
-        fill="none" stroke="#8BC34A" stroke-width="8"/>
+    <!-- T -->
+    <path d="M 330,50 L 370,50 M 350,50 L 350,110"
+          fill="none" stroke="#8BC34A" stroke-width="8"/>
 
-  <!-- Decorative elements -->
-  <circle cx="40" cy="150" r="5" fill="#e0e0e0"/>
-  <circle cx="370" cy="150" r="5" fill="#8BC34A"/>
-  <line x1="40" y1="150" x2="370" y2="150" stroke="#757575" stroke-width="2" stroke-dasharray="5,5"/>
+    <!-- Decorative elements -->
+    <circle cx="40" cy="150" r="5" fill="#333333"/>
+    <circle cx="370" cy="150" r="5" fill="#8BC34A"/>
+    <line x1="40" y1="150" x2="370" y2="150" stroke="#757575" stroke-width="2" stroke-dasharray="5,5"/>
 </svg>

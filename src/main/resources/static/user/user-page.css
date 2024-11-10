@@ -170,7 +170,6 @@ main {
 }
 
 
-
 .content::-webkit-scrollbar {
     width: 8px;
 }
@@ -240,7 +239,6 @@ main {
 }
 
 
-
 .action-btn {
     padding: 0.75rem;
     background-color: #444;
@@ -256,6 +254,7 @@ main {
 .action-btn:hover {
     background-color: #555;
 }
+
 #delete-btn:hover {
     background-color: darkred;
 }
@@ -376,7 +375,6 @@ input[type="file"] {
     width: 20px;
     height: 20px;
 }
-
 
 
 .action-btn:hover {
