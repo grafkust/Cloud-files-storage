@@ -1,0 +1,40 @@
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+
+  liquibase:
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mail:
+    host: localhost
+    port: 1025
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+application:
+  url: http://localhost:8080
+  date-pattern: yyyy-MM-dd HH:mm:ss
+  trash:
+    retention-days: 30
+
+logging:
+  level:
+    org.springframework: INFO
+    com.project.cloud.files.storage: DEBUG
