@@ -5,7 +5,7 @@ networks:
 services:
   app:
     build: .
-    container_name: cloud-storage-app
+    container_name: grafCloud-app
     depends_on:
       db:
         condition: service_healthy
@@ -17,11 +17,11 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "8080:8087"
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8087/actuator/health || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,13 +38,13 @@ services:
     ports:
       - '3306:3306'
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u$${MYSQL_USERNAME}", "-p$${MYSQL_ALLOW_EMPTY_PASSWORD}" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     volumes:
-      - '.\src\main\resources\db-init:/docker-entrypoint-initdb.d'
+      - './src/main/resources/db-init:/docker-entrypoint-initdb.d'
       - 'DB:/var/lib/mysql'
 
   redis:
@@ -65,7 +65,7 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - 'cache:/data'
+      - 'redis:/data'
 
   minio:
     image: minio/minio:latest
@@ -103,5 +103,5 @@ volumes:
     driver: local
   minio:
     driver: local
-  cache:
+  redis:
     driver: local
