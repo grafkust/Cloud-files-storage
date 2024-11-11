@@ -46,7 +46,6 @@ spring:
   liquibase:
     change-log: classpath:liquibase/db.changelog-master.yaml
     enabled: true
-
     default-schema: ${DB_SCHEMA}
     drop-first: false
 
@@ -62,3 +61,22 @@ application:
   date-pattern: ${APPLICATION_DATE_TIME_FORMAT_PATTERN}
   trash:
     retention-days: ${TRASH_RETENTION_DAYS}
+
+logging:
+  file:
+    path: /var/log/grafcloud
+    name: ${logging.file.path}/application.log
+
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.project.cloud.files.storage: INFO
+    io.minio: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate: INFO
+
+  logback:
+    rollingpolicy:
+      max-file-size: 25MB
+      max-history: 10
+      total-size-cap: 250MB
