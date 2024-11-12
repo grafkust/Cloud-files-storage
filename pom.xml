@@ -146,27 +146,11 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
-
-
-
     </dependencies>
-
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -179,6 +163,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -187,9 +172,9 @@
                         -XX:+EnableDynamicAgentLoading
                         -Xshare:off
                     </argLine>
-
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
