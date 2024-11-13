@@ -13,7 +13,8 @@
     <div class="search-container">
         <form action="/" method="get">
             <label>
-                <input class="search-input" name="query" onkeydown="if(key === 'Enter') this.form.submit();" placeholder="Поиск файлов и папок..."
+                <input class="search-input" name="query" onkeydown="if(key === 'Enter') this.form.submit();"
+                       placeholder="Поиск файлов и папок..."
                        type="text">
             </label>
         </form>
@@ -37,7 +38,8 @@
                 </div>
                 <label class="sidebar-btn">
                     <img alt="Upload" class="btn-icon" src="/icon/upload-file.png">
-                    <input accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg" name="data"
+                    <input accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg"
+                           name="data"
                            onchange="this.form.submit()"
                            type="file">
                     <input name="path" th:value="${path}" type="hidden">
@@ -49,7 +51,8 @@
             <form action="/upload-content" enctype="multipart/form-data" method="post">
                 <label class="sidebar-btn">
                     <img alt="Upload" class="btn-icon" src="/icon/upload-folder.png">
-                    <input accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg" directory="" name="data" onchange="this.form.submit()"
+                    <input accept=".doc,.docx,.png,.jpg,.jpeg,.pdf,.xml,,.xlsx,.txt,.mp3,.mp4,.zip,.rar,.java,.dwg"
+                           directory="" name="data" onchange="this.form.submit()"
                            type="file"
                            webkitdirectory="">
                     <input name="path" th:value="${path}" type="hidden">
@@ -59,7 +62,8 @@
             </form>
 
             <form action="/create-folder" method="post">
-                <button class="sidebar-btn" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';"
+                <button class="sidebar-btn"
+                        onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';"
                         type="button">
                     <img alt="New Folder" class="btn-icon" src="/icon/folder.png">
                     <input name="path" th:value="${path}" type="hidden">
@@ -67,7 +71,8 @@
                 </button>
                 <div style="display:none;">
                     <label>
-                        <input class="search-input" name="name" onkeydown="if(key === 'Enter') this.form.submit();" placeholder="Введите имя папки"
+                        <input class="search-input" name="name" onkeydown="if(key === 'Enter') this.form.submit();"
+                               placeholder="Введите имя папки"
                                type="text">
                     </label>
                 </div>
@@ -106,7 +111,6 @@
                 th:text="${!query.isEmpty()} ? ${searchResult + query} : (${!path.isEmpty() || path.contains('/')} ? ${path} : 'Файлы')"
                 th:with="searchResult='Вот что мне удалось найти по запросу: '">
             </h2>
-
             <div class="error-message" style="color: red" th:if="${error == 'move'}">
                 Выбранный объект уже находится в указанной директории
             </div>
@@ -127,34 +131,35 @@
                     <span class="folder-date" th:text="${file.lastModified}"></span>
                     <div class="folder-actions">
 
-                        <form action="/download-content" method="get">
-                            <input name="path" th:value="${path}" type="hidden">
-                            <input name="name" th:value="${file.name}" type="hidden">
-                            <input name="isFile" th:value="${file.isFile}" type="hidden">
-                            <button class="action-btn">
-                                <img alt="Download" src="/icon/download.png">
+                            <form action="/download-content" method="get"
+                                  th:style="${query.isEmpty()} ? '' : 'display: none;'">
+
+                                <input name="path" th:value="${path}" type="hidden">
+                                <input name="name" th:value="${file.name}" type="hidden">
+                                <input name="isFile" th:value="${file.isFile}" type="hidden">
+                                <button class="action-btn">
+                                    <img alt="Download" src="/icon/download.png">
+                                </button>
+                            </form>
+
+                            <button class="action-btn" onclick="openModal(this)"
+                                    th:style="${query.isEmpty()} ? '' : 'display: none;'"
+                                    th:data-file-name="${file.name}"
+                                    th:data-file-path="${file.path}"
+                                    th:data-is-file="${file.isFile}">
+                                <img alt="Move" src="/icon/move.png">
                             </button>
-                        </form>
 
-                        <div th:if="${!file.isSearchResult()}">
-                        </div>
-                        <button class="action-btn" onclick="openModal(this)"
-                                th:data-file-name="${file.name}"
-                                th:data-file-path="${file.path}"
-                                th:data-is-file="${file.isFile}">
-                            <img alt="Move" src="/icon/move.png">
-                        </button>
+                            <form action="/delete-content" method="post"
+                                  th:style="${query.isEmpty()} ? '' : 'display: none;'">
 
-
-                        <form action="/delete-content" method="post">
-                            <input name="path" th:value="${path}" type="hidden">
-                            <input name="name" th:value="${file.name}" type="hidden">
-                            <input name="isFile" th:value="${file.isFile()}" type="hidden">
-                            <button class="action-btn" id="delete-btn">
-                                <img alt="Delete" src="/icon/delete.png">
-                            </button>
-                        </form>
-
+                                <input name="path" th:value="${path}" type="hidden">
+                                <input name="name" th:value="${file.name}" type="hidden">
+                                <input name="isFile" th:value="${file.isFile()}" type="hidden">
+                                <button class="action-btn" id="delete-btn">
+                                    <img alt="Delete" src="/icon/delete.png">
+                                </button>
+                            </form>
                     </div>
                 </div>
             </div>

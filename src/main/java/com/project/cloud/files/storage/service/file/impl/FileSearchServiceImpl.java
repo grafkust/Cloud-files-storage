@@ -80,7 +80,8 @@ public class FileSearchServiceImpl implements FileSearchService {
     private boolean matchesSearchCriteria(StorageItem item, String searchQuery) {
         String fileName = Paths.get(item.getPath()).getFileName().toString();
         String userFilesPattern = "user-\\d+-files";
-        if (fileName.matches(userFilesPattern)) {
+        String trashName = "Trash";
+        if (fileName.matches(userFilesPattern) || fileName.equals(trashName)) {
             return false;
         }
         return fileName.toLowerCase().contains(searchQuery.toLowerCase());
