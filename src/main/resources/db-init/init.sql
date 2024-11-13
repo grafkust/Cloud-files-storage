@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS cloud_files_storage;
+CREATE DATABASE IF NOT EXISTS cloud_files_storage;

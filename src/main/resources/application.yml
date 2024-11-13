@@ -4,6 +4,13 @@ server:
   port: ${PORT}
 
 spring:
+
+  session:
+    redis:
+      namespace: "spring:session"
+      cleanup-cron: "0 0 * * * *"
+    timeout: 24h
+
   servlet:
     multipart:
       max-file-size: 10MB
@@ -80,3 +87,7 @@ logging:
       max-file-size: 25MB
       max-history: 10
       total-size-cap: 250MB
+
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} 
+    %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

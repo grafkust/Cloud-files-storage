@@ -16,5 +16,3 @@ create table if not exists cloud_files_storage.users_roles
     primary key(user_id, role),
     foreign key(user_id) references users(id) on delete cascade on update no action
 );
-
-

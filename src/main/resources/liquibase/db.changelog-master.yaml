@@ -1,4 +1,7 @@
 databaseChangeLog:
   - include:
-      file: changeset/V1_init.sql
+      file: changeset/create-user-tables.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changeset/create-test-user.sql
       relativeToChangelogFile: true
